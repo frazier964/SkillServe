@@ -43,7 +43,7 @@ export default function JobApply() {
   return (
     <Layout>
       <div className="max-w-3xl mx-auto p-6">
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-white/5 to-white/3 border border-white/10 shadow-lg">
+        <div className="p-6 rounded-2xl bg-linear-to-br from-white/5 to-white/3 border border-white/10 shadow-lg">
           <h1 className="text-2xl font-bold text-white mb-2">Apply for: {job.title}</h1>
           <p className="text-white/80 mb-4">{job.description}</p>
           <div className="mb-4 text-sm text-white/70">Posted by <strong className="text-white">{job.postedBy}</strong> • ${job.price} • {job.status}</div>

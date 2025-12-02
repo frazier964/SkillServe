@@ -1,6 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import { auth } from "../firebase/FirebaseConfig";
-import { onAuthStateChanged } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import Portal from "../components/Portal";
@@ -180,56 +178,33 @@ export default function Dashboard() {
   useEffect(() => {
     // Protect this route: require a signed-in user (either localStorage or Firebase)
     const stored = JSON.parse(localStorage.getItem("user") || "null");
+    console.log('Dashboard useEffect - stored user:', stored);
     if (stored && (stored.email || stored.uid || stored.name)) {
       setUser(stored);
       loadJobsAndData();
       return;
     }
 
-    // If no stored profile, listen for Firebase auth state briefly and redirect if unauthenticated
-    const unsub = onAuthStateChanged(auth, async (fbUser) => {
-      if (fbUser) {
-        try {
-          // Load complete profile from Firestore
-          const { doc: docRef, getDoc } = await import('firebase/firestore');
-          const { db } = await import('../firebase/FirebaseConfig');
-          const userDocRef = docRef(db, 'users', fbUser.uid);
-          const userDocSnap = await getDoc(userDocRef);
-          
-          let profile;
-          if (userDocSnap.exists()) {
-            const firestoreProfile = userDocSnap.data();
-            profile = {
-              uid: fbUser.uid,
-              email: fbUser.email,
-              name: fbUser.displayName || firestoreProfile.name || '',
-              role: firestoreProfile.role,
-              ...firestoreProfile
-            };
-          } else {
-            // Fallback to stored or create basic profile
-            const existing = JSON.parse(localStorage.getItem('user') || '{}') || {};
-            profile = { ...(existing || {}), uid: fbUser.uid, email: fbUser.email, name: fbUser.displayName };
-          }
-          setUser(profile);
-          try { localStorage.setItem('user', JSON.stringify(profile)); } catch (e) {}
-          loadJobsAndData();
-        } catch (e) {
-          console.warn('Failed to load profile from Firestore', e);
-          // Fallback
-          const existing = JSON.parse(localStorage.getItem('user') || '{}') || {};
-          const profile = { ...(existing || {}), uid: fbUser.uid, email: fbUser.email, name: fbUser.displayName };
-          setUser(profile);
-          try { localStorage.setItem('user', JSON.stringify(profile)); } catch (e2) {}
-          loadJobsAndData();
-        }
-      } else {
-        // not signed in — redirect to login
-        navigate('/login');
-      }
-    });
-    return () => unsub();
+    // If no stored profile, redirect to login
+    console.log('Dashboard - no user found, redirecting to login');
+    navigate('/login');
   }, [navigate]);
+
+  // Listen for user updates from login
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      console.log('Dashboard - userUpdated event received');
+      const stored = JSON.parse(localStorage.getItem("user") || "null");
+      if (stored && (stored.email || stored.uid || stored.name)) {
+        console.log('Dashboard - setting user from event:', stored);
+        setUser(stored);
+        loadJobsAndData();
+      }
+    };
+
+    window.addEventListener('userUpdated', handleUserUpdate);
+    return () => window.removeEventListener('userUpdated', handleUserUpdate);
+  }, []);
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileRef = useRef(null);
@@ -475,6 +450,25 @@ export default function Dashboard() {
     return fb - fa; 
   });
 
+  // Debug: Check localStorage directly
+  const debugUser = localStorage.getItem('user');
+  console.log('Dashboard - localStorage user:', debugUser);
+  console.log('Dashboard - user state:', user);
+
+  // Debug: Check if user is loaded
+  if (!user) {
+    return (
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-white text-xl">
+            Loading user data...
+            <br />
+            <small>Debug: localStorage has {debugUser ? 'user data' : 'no user data'}</small>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
   
   return (
     <Layout>
@@ -550,6 +544,7 @@ export default function Dashboard() {
                       <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/profile/view'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100">View profile</button>
                       <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/settings'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100">Settings</button>
                       <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/premium'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100">Premium</button>
+                      <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/help'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100 text-green-600 font-medium">🆘 Help & Support</button>
                       <div className="border-t my-1" />
                       <button role="menuitem" onClick={() => { localStorage.removeItem('user'); window.dispatchEvent(new CustomEvent('userUpdated')); navigate('/login'); }} className="w-full text-left px-3 py-2 rounded text-red-600 hover:bg-slate-100">Logout</button>
                     </div>
@@ -565,7 +560,7 @@ export default function Dashboard() {
             title="Total Jobs"
             value={stats.totalJobs}
             color="text-white"
-            bgColor="bg-gradient-to-br from-blue-600/20 to-blue-800/20"
+            bgColor="bg-linear-to-br from-blue-600/20 to-blue-800/20"
             icon={(
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />

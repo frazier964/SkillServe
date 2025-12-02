@@ -1,9 +1,6 @@
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
-import { auth, db } from "../firebase/FirebaseConfig";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -44,56 +41,27 @@ export default function Signup() {
       return;
     }
 
+    // Save account to localStorage (no Firebase)
+    const profile = { 
+      name, 
+      email, 
+      password, 
+      role, 
+      uid: 'local-' + Date.now(),
+      createdAt: new Date().toISOString() 
+    };
     
-    // Attempt to create real Firebase account and store profile in Firestore.
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = cred.user.uid;
-      // Set display name on auth profile
-      try {
-        await updateProfile(cred.user, { displayName: name });
-      } catch (upErr) {
-        console.warn('Failed to update display name', upErr);
-      }
-      // Save profile to Firestore
-      try {
-        await setDoc(doc(db, "users", uid), { name, email, role, createdAt: new Date().toISOString() });
-      } catch (dbErr) {
-        console.warn('Failed to write user profile to Firestore', dbErr);
-      }
-      // Sign out immediately to force login page visit
-      try {
-        const { signOut } = await import('firebase/auth');
-        await signOut(auth);
-      } catch (signOutErr) {
-        console.warn('Failed to sign out after signup', signOutErr);
-      }
-      // Don't persist user data - require login after signup
-      setSuccess("Account created successfully! Please log in with your new credentials.");
-      setTimeout(() => navigate("/login"), 800);
-    } catch (firebaseErr) {
-      console.warn('Firebase signup failed, falling back to local demo flow', firebaseErr);
-      // Fall back to local signup for demo
-      const profile = { name, email, password, role };
-      try { localStorage.setItem("user", JSON.stringify(profile)); } catch (e) {}
-      try {
-        const { firebaseErrorMessage } = await import('../utils/firebaseErrors');
-        const msg = firebaseErrorMessage(firebaseErr);
-        setError(msg);
-        const code = (firebaseErr?.code || firebaseErr?.message || '').toString().toLowerCase();
-        if (code.includes('configuration-not-found') || code.includes('auth/configuration-not-found')) {
-          setShowEnableAuthLink(true);
-        } else {
-          setShowEnableAuthLink(false);
-        }
-      } catch (e) {
-        setError(firebaseErr.message || 'Signup failed.');
-      }
-      setSuccess("Signup saved locally (demo). Please log in with your new account.");
-      setTimeout(() => navigate("/login"), 800);
-    } finally {
+    try { 
+      localStorage.setItem("user", JSON.stringify(profile)); 
+    } catch (e) {
+      setError("Failed to save account. Please try again.");
       setIsLoading(false);
+      return;
     }
+    
+    setSuccess("Account created successfully! Please log in with your new credentials.");
+    setTimeout(() => navigate("/login"), 800);
+    setIsLoading(false);
   };
 
   // ---------- Google OAuth PKCE + code flow (client-side demo) ----------

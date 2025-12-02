@@ -1,9 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
-import { auth, db } from "../firebase/FirebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -45,7 +42,7 @@ export default function Login() {
   };
 
   // Create demo accounts on component mount
-  useState(() => {
+  useEffect(() => {
     createDemoAccounts();
   }, []);
 
@@ -61,71 +58,70 @@ export default function Login() {
       return;
     }
 
-    // Try Firebase Authentication first (preferred now that Firebase is enabled)
-    try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      const uid = cred.user.uid;
-      // Attempt to load profile from Firestore
-      try {
-        const userDoc = await getDoc(doc(db, "users", uid));
-        const profile = userDoc.exists() ? { uid, ...userDoc.data() } : { uid, email, name: cred.user.displayName };
-        try { localStorage.setItem("user", JSON.stringify(profile)); } catch (e) {}
-        if (remember) localStorage.setItem("remembered", JSON.stringify({ email }));
-        setSuccess(`Welcome back, ${profile.name || profile.email}!`);
-        // Navigate to dashboard (it handles role-based views)
-        setTimeout(() => navigate("/"), 500);
-      } catch (readErr) {
-        console.warn('Failed to read user profile from Firestore', readErr);
-        try { localStorage.setItem("user", JSON.stringify({ uid, email })); } catch (e) {}
-        setSuccess(`Welcome back!`);
-        setTimeout(() => navigate("/"), 500);
+    // ALWAYS check demo accounts first - create them if they don't exist
+    const demoAccounts = [
+      {
+        name: "John Smith",
+        email: "handyman@demo.com", 
+        password: "demo123",
+        role: "handyman",
+        uid: "demo-handyman-001"
+      },
+      {
+        name: "Sarah Johnson", 
+        email: "client@demo.com",
+        password: "demo123", 
+        role: "client",
+        uid: "demo-client-001"
       }
-    } catch (firebaseErr) {
-      // Fall back to local demo auth for offline/demo mode
-      console.warn('Firebase sign-in failed, falling back to local demo auth', firebaseErr);
-      
-      // Check stored user account
-      const user = JSON.parse(localStorage.getItem("user") || "null");
-      // Also check demo accounts
-      const demoAccounts = JSON.parse(localStorage.getItem("demoAccounts") || "[]");
-      const demoUser = demoAccounts.find(acc => acc.email === email && acc.password === password);
-      
-      const foundUser = user && user.email === email && user.password === password ? user : demoUser;
-      
-      if (foundUser) {
-        // Ensure the user object has all required fields including role
-        const completeUser = {
-          name: foundUser.name || foundUser.email,
-          email: foundUser.email,
-          role: foundUser.role || '',
-          uid: foundUser.uid || 'local-' + Date.now()
-        };
-        // Save the complete user object to localStorage for the session
-        try { localStorage.setItem("user", JSON.stringify(completeUser)); } catch (e) {}
-        if (remember) localStorage.setItem("remembered", JSON.stringify({ email }));
-        setSuccess(`Welcome back, ${foundUser.name}!`);
-        setTimeout(() => {
-          navigate("/");
-        }, 500);
-      } else {
-        // Show friendly Firebase error messages when available
-        try {
-          const { firebaseErrorMessage } = await import('../utils/firebaseErrors');
-          const msg = firebaseErrorMessage(firebaseErr);
-          setError(msg);
-          const code = (firebaseErr?.code || firebaseErr?.message || '').toString().toLowerCase();
-          if (code.includes('configuration-not-found') || code.includes('auth/configuration-not-found')) {
-            setShowEnableAuthLink(true);
-          } else {
-            setShowEnableAuthLink(false);
-          }
-        } catch (e) {
-          setError(firebaseErr.message || "Invalid email or password. Please try again.");
-        }
-      }
-    } finally {
+    ];
+    
+    // Check if this is a demo account
+    const demoUser = demoAccounts.find(acc => acc.email === email && acc.password === password);
+    
+    if (demoUser) {
+      // Use demo account directly - no Firebase needed
+      const completeUser = {
+        name: demoUser.name,
+        email: demoUser.email,
+        role: demoUser.role,
+        uid: demoUser.uid
+      };
+      try { 
+        localStorage.setItem("user", JSON.stringify(completeUser)); 
+        // Broadcast the user update event so Layout component updates
+        window.dispatchEvent(new Event('userUpdated'));
+      } catch (e) {}
+      if (remember) localStorage.setItem("remembered", JSON.stringify({ email }));
+      setSuccess(`Welcome back, ${demoUser.name}!`);
+      setTimeout(() => navigate("/"), 500);
       setIsLoading(false);
+      return;
     }
+
+    // Check localStorage for existing accounts (from signup)
+    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+    if (storedUser && storedUser.email === email && storedUser.password === password) {
+      // Use stored account
+      const completeUser = {
+        name: storedUser.name,
+        email: storedUser.email,
+        role: storedUser.role,
+        uid: storedUser.uid || 'local-' + Date.now()
+      };
+      try { 
+        localStorage.setItem("user", JSON.stringify(completeUser)); 
+        window.dispatchEvent(new Event('userUpdated'));
+      } catch (e) {}
+      if (remember) localStorage.setItem("remembered", JSON.stringify({ email }));
+      setSuccess(`Welcome back, ${completeUser.name}!`);
+      setTimeout(() => navigate("/"), 500);
+      setIsLoading(false);
+      return;
+    }
+    // If no match found
+    setError("Invalid email or password. Try demo accounts: handyman@demo.com / demo123 or client@demo.com / demo123");
+    setIsLoading(false);
   };
 
   return (

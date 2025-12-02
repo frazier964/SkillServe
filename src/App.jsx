@@ -19,6 +19,7 @@ import Cashout from "./pages/Cashout";
 import Analytics from "./pages/Analytics";
 import ClientRatings from "./pages/ClientRatings";
 import Availability from "./pages/Availability";
+import Help from "./pages/Help";
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
         <Route path="/cashout" element={<ProtectedRoute><Cashout /></ProtectedRoute>} />
         <Route path="/clientratings" element={<ProtectedRoute><ClientRatings /></ProtectedRoute>} />
         <Route path="/availability" element={<ProtectedRoute><Availability /></ProtectedRoute>} />
+        <Route path="/help" element={<ProtectedRoute><Help /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

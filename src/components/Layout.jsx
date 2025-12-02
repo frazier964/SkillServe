@@ -1,8 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import Portal from "../components/Portal";
-import { auth } from "../firebase/FirebaseConfig";
-import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export default function Layout({ children }) {
   let initialUser = null;
@@ -17,13 +15,20 @@ export default function Layout({ children }) {
 
   const [userState, setUserState] = useState(initialUser);
   const role = userState && userState.role ? String(userState.role).toLowerCase() : null;
+
+  // Force check user state on component mount to catch login updates
+  useEffect(() => {
+    try {
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+      if (currentUser && (!userState || userState.email !== currentUser.email)) {
+        setUserState(currentUser);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, []);
   const [messages, setMessages] = useState([]);
   const [showMsgPreview, setShowMsgPreview] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);
-  const [helpSubject, setHelpSubject] = useState('');
-  const [helpMessage, setHelpMessage] = useState('');
-  const [helpContact, setHelpContact] = useState('');
-  const [helpIsMalicious, setHelpIsMalicious] = useState(false);
   const [showSignoutConfirm, setShowSignoutConfirm] = useState(false);
   const msgAnchorRef = useRef(null);
   const msgDropdownRef = useRef(null);
@@ -49,9 +54,13 @@ export default function Layout({ children }) {
         // keep user state in sync if updated elsewhere
         try {
           const u = JSON.parse(localStorage.getItem('user'));
-          if (u) setUserState(u);
+          if (u) {
+            setUserState(u);
+          } else {
+            setUserState(null);
+          }
         } catch (e) {
-          // ignore
+          setUserState(null);
         }
       } catch (e) {
         console.error('Failed to refresh messages in Layout', e);
@@ -73,74 +82,13 @@ export default function Layout({ children }) {
     };
   }, []);
 
-  // Listen for Firebase auth state changes and keep local user state in sync
-  useEffect(() => {
-    try {
-      const unsub = onAuthStateChanged(auth, async (fbUser) => {
-        if (fbUser) {
-          // Load complete profile from Firestore if available
-          try {
-            const { doc, getDoc } = await import('firebase/firestore');
-            const { db } = await import('../firebase/FirebaseConfig');
-            const userDocRef = doc(db, 'users', fbUser.uid);
-            const userDocSnap = await getDoc(userDocRef);
-            
-            if (userDocSnap.exists()) {
-              // Profile found in Firestore - use it
-              const firestoreProfile = userDocSnap.data();
-              const profile = {
-                uid: fbUser.uid,
-                email: fbUser.email,
-                name: fbUser.displayName || firestoreProfile.name || '',
-                role: firestoreProfile.role,
-                ...firestoreProfile
-              };
-              setUserState(profile);
-              localStorage.setItem('user', JSON.stringify(profile));
-            } else {
-              // No Firestore profile - try localStorage as fallback
-              const stored = JSON.parse(localStorage.getItem('user')) || {};
-              const profile = { ...(stored || {}), uid: fbUser.uid, email: fbUser.email, name: fbUser.displayName };
-              setUserState(profile);
-              localStorage.setItem('user', JSON.stringify(profile));
-            }
-          } catch (e) {
-            // Firestore load failed - use localStorage fallback
-            console.warn('Failed to load profile from Firestore', e);
-            try {
-              const stored = JSON.parse(localStorage.getItem('user')) || {};
-              const profile = { ...(stored || {}), uid: fbUser.uid, email: fbUser.email, name: fbUser.displayName };
-              setUserState(profile);
-              localStorage.setItem('user', JSON.stringify(profile));
-            } catch (storageErr) {
-              setUserState({ uid: fbUser.uid, email: fbUser.email, name: fbUser.displayName });
-            }
-          }
-        } else {
-          // signed out
-          setUserState(null);
-          try { localStorage.removeItem('user'); } catch (e) {}
-        }
-        // broadcast update for other parts of the app
-        window.dispatchEvent(new Event('userUpdated'));
-      });
-      return () => unsub();
-    } catch (e) {
-      // if firebase isn't configured, ignore
-      console.warn('Auth listener not attached', e);
-    }
-  }, []);
+
   
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Try to sign out from Firebase then clear local profile
-    try {
-      signOut(auth).catch(() => {});
-    } catch (e) {
-      // ignore
-    }
     try { localStorage.removeItem("user"); } catch (e) {}
+    setUserState(null);
     window.dispatchEvent(new Event('userUpdated'));
     alert("Logged out!");
     navigate("/login");
@@ -354,76 +302,12 @@ export default function Layout({ children }) {
                 )}
               </div>
             )}
-            {/* Help button - open modal to request help or report abuse */}
-            <button onClick={() => setShowHelpModal(true)} className="text-white/80 hover:text-white transition-colors duration-300 font-medium px-3 py-1 rounded-md">
-              Help
-            </button>
+
           </nav>
         </div>
       </header>
 
-      {/* Help modal */}
-      {showHelpModal && (
-        <Portal>
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={() => setShowHelpModal(false)} />
-            <div className="relative bg-white text-slate-900 rounded-lg shadow-xl w-full max-w-lg mx-4 p-6 z-10">
-              <div className="flex items-start justify-between">
-                <h2 className="text-lg font-semibold">Request Help / Report</h2>
-                <button onClick={() => setShowHelpModal(false)} className="text-slate-500 hover:text-slate-700">✕</button>
-              </div>
-              <p className="text-sm text-slate-600 mt-2">Describe your issue. We will review and follow up.</p>
-              <div className="mt-4 space-y-3">
-                <div>
-                  <label className="block text-sm text-slate-700">Subject</label>
-                  <input value={helpSubject} onChange={e => setHelpSubject(e.target.value)} className="w-full mt-1 p-2 border rounded bg-white text-slate-900" placeholder="Short summary" />
-                </div>
-                <div>
-                  <label className="block text-sm text-slate-700">Details</label>
-                  <textarea value={helpMessage} onChange={e => setHelpMessage(e.target.value)} className="w-full mt-1 p-2 border rounded bg-white text-slate-900" rows={5} placeholder="Provide as much detail as you can, including links or user names involved." />
-                </div>
-                <div>
-                  <label className="block text-sm text-slate-700">Contact (optional)</label>
-                  <input value={helpContact} onChange={e => setHelpContact(e.target.value)} className="w-full mt-1 p-2 border rounded bg-white text-slate-900" placeholder="Email or phone (optional)" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <input id="malicious" type="checkbox" checked={helpIsMalicious} onChange={e => setHelpIsMalicious(e.target.checked)} />
-                  <label htmlFor="malicious" className="text-sm text-slate-700">This is a report of malicious or abusive behavior</label>
-                </div>
-              </div>
-              <div className="mt-4 flex justify-end gap-3">
-                <button onClick={() => {
-                  // clear and close
-                  setHelpSubject(''); setHelpMessage(''); setHelpContact(''); setHelpIsMalicious(false); setShowHelpModal(false);
-                }} className="px-4 py-2 rounded border">Cancel</button>
-                <button onClick={() => {
-                  try {
-                    const raw = localStorage.getItem('helpRequests');
-                    const list = raw ? JSON.parse(raw) : [];
-                    const entry = {
-                      id: Date.now().toString(),
-                      subject: helpSubject || 'No subject',
-                      message: helpMessage || '',
-                      contact: helpContact || '',
-                      isMalicious: !!helpIsMalicious,
-                      user: userState ? { id: userState.id, name: userState.name, email: userState.email } : null,
-                      time: new Date().toISOString()
-                    };
-                    list.unshift(entry);
-                    localStorage.setItem('helpRequests', JSON.stringify(list));
-                    window.dispatchEvent(new Event('helpRequestsUpdated'));
-                    alert('Help request submitted. We will follow up shortly.');
-                  } catch (e) {
-                    console.error('Failed to save help request', e);
-                    alert('Failed to submit help request. Please try again.');
-                  }
-                  setHelpSubject(''); setHelpMessage(''); setHelpContact(''); setHelpIsMalicious(false); setShowHelpModal(false);
-                }} className="px-4 py-2 rounded bg-blue-600 text-white">Submit</button>
-              </div>
-            </div>
-          </div>
-        </Portal>
-      )}
+
       
       {/* Sign-out confirmation modal */}
       {showSignoutConfirm && (
@@ -439,8 +323,8 @@ export default function Layout({ children }) {
               <div className="mt-4 flex justify-end gap-3">
                 <button onClick={() => setShowSignoutConfirm(false)} className="px-4 py-2 rounded border">Cancel</button>
                 <button onClick={() => { 
-                    try { signOut(auth).catch(()=>{}); } catch(e) {}
                     try { localStorage.removeItem('user'); } catch(e) {}
+                    setUserState(null);
                     window.dispatchEvent(new Event('userUpdated'));
                     setShowSignoutConfirm(false);
                     navigate('/login');

@@ -101,7 +101,7 @@ function Availability() {
             </div>
 
             {/* Current Status */}
-            <div className="mb-8 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+            <div className="mb-8 p-4 bg-linear-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
               <div className="flex items-center gap-3">
                 <div className={`w-3 h-3 rounded-full ${isAvailableNow ? 'bg-green-500' : 'bg-gray-400'}`}></div>
                 <span className="font-semibold text-gray-700">
@@ -197,7 +197,7 @@ function Availability() {
             <div className="mt-8 flex justify-end">
               <button
                 onClick={handleSave}
-                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-lg"
+                className="px-8 py-3 bg-linear-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-lg"
               >
                 Save Availability
               </button>
