@@ -117,7 +117,7 @@ export default function PostJob() {
                 Budget (USD) *
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black/70 font-semibold">
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black font-semibold">
                   $
                 </span>
                 <input 
@@ -125,7 +125,7 @@ export default function PostJob() {
                   placeholder="0.00"
                   value={price} 
                   onChange={(e) => setPrice(e.target.value)} 
-                  className="input-field w-full pl-8 pr-4 py-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/50 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 transition-all duration-300" 
+                  className="input-field w-full pl-8 pr-4 py-4 rounded-xl bg-white backdrop-blur-sm border border-white/20 text-black placeholder-gray-500 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 transition-all duration-300" 
                   required 
                   min="0"
                   step="0.01"

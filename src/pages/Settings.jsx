@@ -126,13 +126,13 @@ export default function Settings() {
             <div className="md:col-span-1">
               <label className="flex flex-col">
                 <span className="text-sm text-white/70 mb-1">New password</span>
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="p-3 rounded-md bg-white/5 border border-white/10 text-white" />
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="p-3 rounded-md bg-white border border-slate-300 text-black" />
               </label>
             </div>
             <div className="md:col-span-1">
               <label className="flex flex-col">
                 <span className="text-sm text-white/70 mb-1">Confirm password</span>
-                <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="p-3 rounded-md bg-white/5 border border-white/10 text-white" />
+                <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="p-3 rounded-md bg-white border border-slate-300 text-black" />
               </label>
             </div>
             <div className="md:col-span-1">

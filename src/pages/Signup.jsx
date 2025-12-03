@@ -41,20 +41,35 @@ export default function Signup() {
       return;
     }
 
-    // Save account to localStorage (no Firebase)
-    const profile = { 
-      name, 
-      email, 
-      password, 
-      role, 
-      uid: 'local-' + Date.now(),
-      createdAt: new Date().toISOString() 
-    };
-    
-    try { 
-      localStorage.setItem("user", JSON.stringify(profile)); 
+    try {
+      // Check if email already exists
+      const registeredAccounts = JSON.parse(localStorage.getItem("registeredAccounts") || "[]");
+      const existingAccount = registeredAccounts.find(acc => acc.email === email);
+      
+      if (existingAccount) {
+        setError("An account with this email already exists. Please use a different email or try logging in.");
+        setIsLoading(false);
+        return;
+      }
+      
+      // Create new account
+      const newAccount = { 
+        name, 
+        email, 
+        password, 
+        role, 
+        uid: 'local-' + Date.now(),
+        createdAt: new Date().toISOString(),
+        bio: '',
+        avatarDataUrl: ''
+      };
+      
+      // Add to accounts list
+      registeredAccounts.push(newAccount);
+      localStorage.setItem("registeredAccounts", JSON.stringify(registeredAccounts));
+      
     } catch (e) {
-      setError("Failed to save account. Please try again.");
+      setError("Failed to create account. Please try again.");
       setIsLoading(false);
       return;
     }

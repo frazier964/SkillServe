@@ -14,36 +14,20 @@ export default function Login() {
   const [focusedField, setFocusedField] = useState(null);
   const navigate = useNavigate();
 
-  // Create demo accounts for testing
-  const createDemoAccounts = () => {
-    const demoAccounts = [
-      {
-        name: "John Smith",
-        email: "handyman@demo.com", 
-        password: "demo123",
-        role: "handyman",
-        uid: "demo-handyman-001"
-      },
-      {
-        name: "Sarah Johnson", 
-        email: "client@demo.com",
-        password: "demo123", 
-        role: "client",
-        uid: "demo-client-001"
-      }
-    ];
-
-    // Save demo accounts to localStorage for easy login testing
-    try {
-      localStorage.setItem("demoAccounts", JSON.stringify(demoAccounts));
-    } catch (e) {
-      console.warn('Failed to save demo accounts', e);
-    }
-  };
-
-  // Create demo accounts on component mount
+  // Load remembered email if exists
   useEffect(() => {
-    createDemoAccounts();
+    try {
+      const remembered = localStorage.getItem("remembered");
+      if (remembered) {
+        const { email: savedEmail } = JSON.parse(remembered);
+        if (savedEmail) {
+          setEmail(savedEmail);
+          setRemember(true);
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
   }, []);
 
   const handleLogin = async (e) => {
@@ -58,69 +42,40 @@ export default function Login() {
       return;
     }
 
-    // ALWAYS check demo accounts first - create them if they don't exist
-    const demoAccounts = [
-      {
-        name: "John Smith",
-        email: "handyman@demo.com", 
-        password: "demo123",
-        role: "handyman",
-        uid: "demo-handyman-001"
-      },
-      {
-        name: "Sarah Johnson", 
-        email: "client@demo.com",
-        password: "demo123", 
-        role: "client",
-        uid: "demo-client-001"
+    try {
+      // Check if account exists in registered accounts
+      const registeredAccounts = JSON.parse(localStorage.getItem("registeredAccounts") || "[]");
+      const foundAccount = registeredAccounts.find(acc => acc.email === email && acc.password === password);
+      
+      if (foundAccount) {
+        // Login successful - set current user
+        const currentUser = {
+          name: foundAccount.name,
+          email: foundAccount.email,
+          role: foundAccount.role,
+          uid: foundAccount.uid,
+          bio: foundAccount.bio || '',
+          avatarDataUrl: foundAccount.avatarDataUrl || ''
+        };
+        
+        localStorage.setItem("user", JSON.stringify(currentUser));
+        window.dispatchEvent(new Event('userUpdated'));
+        
+        if (remember) {
+          localStorage.setItem("remembered", JSON.stringify({ email }));
+        }
+        
+        setSuccess(`Welcome back, ${foundAccount.name}!`);
+        setTimeout(() => navigate("/"), 500);
+        setIsLoading(false);
+        return;
       }
-    ];
-    
-    // Check if this is a demo account
-    const demoUser = demoAccounts.find(acc => acc.email === email && acc.password === password);
-    
-    if (demoUser) {
-      // Use demo account directly - no Firebase needed
-      const completeUser = {
-        name: demoUser.name,
-        email: demoUser.email,
-        role: demoUser.role,
-        uid: demoUser.uid
-      };
-      try { 
-        localStorage.setItem("user", JSON.stringify(completeUser)); 
-        // Broadcast the user update event so Layout component updates
-        window.dispatchEvent(new Event('userUpdated'));
-      } catch (e) {}
-      if (remember) localStorage.setItem("remembered", JSON.stringify({ email }));
-      setSuccess(`Welcome back, ${demoUser.name}!`);
-      setTimeout(() => navigate("/"), 500);
-      setIsLoading(false);
-      return;
+      
+      // No account found
+      setError("Invalid email or password. Please check your credentials or create a new account.");
+    } catch (e) {
+      setError("Login failed. Please try again.");
     }
-
-    // Check localStorage for existing accounts (from signup)
-    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-    if (storedUser && storedUser.email === email && storedUser.password === password) {
-      // Use stored account
-      const completeUser = {
-        name: storedUser.name,
-        email: storedUser.email,
-        role: storedUser.role,
-        uid: storedUser.uid || 'local-' + Date.now()
-      };
-      try { 
-        localStorage.setItem("user", JSON.stringify(completeUser)); 
-        window.dispatchEvent(new Event('userUpdated'));
-      } catch (e) {}
-      if (remember) localStorage.setItem("remembered", JSON.stringify({ email }));
-      setSuccess(`Welcome back, ${completeUser.name}!`);
-      setTimeout(() => navigate("/"), 500);
-      setIsLoading(false);
-      return;
-    }
-    // If no match found
-    setError("Invalid email or password. Try demo accounts: handyman@demo.com / demo123 or client@demo.com / demo123");
     setIsLoading(false);
   };
 
@@ -327,15 +282,6 @@ export default function Login() {
                 </svg>
                 <span className="group-hover:text-emerald-700 transition-colors">Google</span>
               </button>
-
-              {/* Demo Accounts Info */}
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <h4 className="font-semibold text-blue-800 text-sm mb-2">Demo Accounts:</h4>
-                <div className="text-xs text-blue-700 space-y-1">
-                  <div><strong>Handyman:</strong> handyman@demo.com / demo123</div>
-                  <div><strong>Client:</strong> client@demo.com / demo123</div>
-                </div>
-              </div>
 
               {/* Sign Up Link */}
               <div className="text-center pt-6 border-t border-gray-200">
