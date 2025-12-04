@@ -145,6 +145,10 @@ export default function PostJob() {
                 <option value="design" className="bg-slate-800">Design & Creative</option>
                 <option value="writing" className="bg-slate-800">Writing & Content</option>
                 <option value="marketing" className="bg-slate-800">Marketing</option>
+                <option value="chef" className="bg-slate-800">Chef/Cook</option>
+                <option value="delivery" className="bg-slate-800">Delivery Driver</option>
+                <option value="cashier" className="bg-slate-800">Cashier</option>
+                <option value="food-service" className="bg-slate-800">Food Service</option>
                 <option value="other" className="bg-slate-800">Other</option>
               </select>
             </div>

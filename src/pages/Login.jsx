@@ -12,6 +12,11 @@ export default function Login() {
   const [showEnableAuthLink, setShowEnableAuthLink] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [resetStep, setResetStep] = useState('email'); // 'email' or 'password'
   const navigate = useNavigate();
 
   // Load remembered email if exists
@@ -77,6 +82,75 @@ export default function Login() {
       setError("Login failed. Please try again.");
     }
     setIsLoading(false);
+  };
+
+  const handlePasswordReset = () => {
+    if (resetStep === 'email') {
+      if (!resetEmail.trim()) {
+        alert('Please enter your email address');
+        return;
+      }
+
+      // Check if email exists in registered accounts
+      try {
+        const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+        const accountExists = registeredAccounts.find(acc => acc.email === resetEmail);
+        
+        if (!accountExists) {
+          alert('No account found with this email address');
+          return;
+        }
+
+        // Move to password reset step
+        setResetStep('password');
+        setSuccess('Account found! Please enter your new password.');
+      } catch (e) {
+        alert('Error checking account. Please try again.');
+      }
+    } else {
+      // Validate new password
+      if (!newPassword.trim() || newPassword.length < 6) {
+        alert('Password must be at least 6 characters long');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+
+      try {
+        // Update password in registered accounts
+        const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
+        const updatedAccounts = registeredAccounts.map(acc => 
+          acc.email === resetEmail 
+            ? { ...acc, password: newPassword }
+            : acc
+        );
+        
+        localStorage.setItem('registeredAccounts', JSON.stringify(updatedAccounts));
+        
+        setSuccess('Password reset successfully! You can now log in with your new password.');
+        setShowResetModal(false);
+        setResetEmail('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setResetStep('email');
+        setEmail(resetEmail);
+      } catch (e) {
+        alert('Error resetting password. Please try again.');
+      }
+    }
+  };
+
+  const closeResetModal = () => {
+    setShowResetModal(false);
+    setResetEmail('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setResetStep('email');
+    setError('');
+    setSuccess('');
   };
 
   return (
@@ -235,12 +309,13 @@ export default function Login() {
                   />
                   <span className="text-sm text-gray-600 group-hover:text-gray-700 select-none transition-colors">Remember me</span>
                 </label>
-                <Link
-                  to="/"
+                <button
+                  type="button"
+                  onClick={() => setShowResetModal(true)}
                   className="text-sm text-emerald-600 hover:text-emerald-700 font-medium hover:underline transition-colors duration-200"
                 >
                   Forgot password?
-                </Link>
+                </button>
               </div>
 
               {/* Submit Button */}
@@ -299,6 +374,96 @@ export default function Login() {
           </div>
         </div>
       </div>
+
+      {/* Password Reset Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+            <div className="p-6 border-b">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold text-slate-900">
+                  {resetStep === 'email' ? 'Reset Password' : 'Set New Password'}
+                </h2>
+                <button 
+                  onClick={closeResetModal}
+                  className="text-slate-500 hover:text-slate-700 text-2xl"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-6">
+              {resetStep === 'email' ? (
+                <div className="space-y-4">
+                  <p className="text-slate-600 text-sm">
+                    Enter your email address and we'll help you reset your password.
+                  </p>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-slate-600 text-sm">
+                    Account found for <strong>{resetEmail}</strong>. Please enter your new password.
+                  </p>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password (min 6 characters)"
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t bg-slate-50">
+              <div className="flex justify-between gap-3">
+                <button
+                  onClick={closeResetModal}
+                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-100 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handlePasswordReset}
+                  className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg transition-colors"
+                >
+                  {resetStep === 'email' ? 'Find Account' : 'Reset Password'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }

@@ -546,6 +546,16 @@ export default function Dashboard() {
                       <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/premium'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100">Premium</button>
                       <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/help'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100 text-green-600 font-medium">🆘 Help & Support</button>
                       <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/order-food'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100 text-orange-600 font-medium">🍕 Order Food</button>
+                      {user?.role === 'handyman' && (
+                        <>
+                          <div className="border-t my-1" />
+                          <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/messages'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100 text-blue-600 font-medium">💬 Messages</button>
+                          <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/cashout'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100 text-emerald-600 font-medium">💰 Cashout</button>
+                          <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/analytics'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100 text-purple-600 font-medium">📊 Analytics</button>
+                          <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/viewjobs'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100 text-indigo-600 font-medium">🔍 View Jobs</button>
+                          <button role="menuitem" onClick={() => { setShowProfileMenu(false); navigate('/studentdetails'); }} className="w-full text-left px-3 py-2 rounded hover:bg-slate-100 text-teal-600 font-medium">👨‍🎓 Student Details</button>
+                        </>
+                      )}
                       <div className="border-t my-1" />
                       <button role="menuitem" onClick={() => { localStorage.removeItem('user'); window.dispatchEvent(new CustomEvent('userUpdated')); navigate('/login'); }} className="w-full text-left px-3 py-2 rounded text-red-600 hover:bg-slate-100">Logout</button>
                     </div>

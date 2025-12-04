@@ -146,41 +146,7 @@ export default function Layout({ children }) {
               </Link>
             )}
             
-            {userState && role === 'handyman' && (
-              <Link
-                to="/studentdetails"
-                className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
-              >
-                Student Details
-              </Link>
-            )}
-            
-            {userState && role === 'handyman' && (
-              <Link
-                to="/viewjobs"
-                className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
-              >
-                View Jobs
-              </Link>
-            )}
-            
-            {userState && role === 'handyman' && (
-              <Link
-                to="/analytics"
-                className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
-              >
-                Analytics
-              </Link>
-            )}
-            
-            {userState && role === 'handyman' && (
-              <Link
-                to="/cashout"
-                className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
-              >
-                Cashout
-              </Link>
-            )}
+
             
             {userState && role === 'client' && (
               <Link
@@ -198,24 +164,7 @@ export default function Layout({ children }) {
                 Post Job
               </Link>
             )}
-            {/* Profile and Settings - visible to all logged in users */}
-            {userState && (
-              <Link
-                to="/profile"
-                className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
-              >
-                Profile
-              </Link>
-            )}
-            
-            {userState && (
-              <Link
-                to="/settings"
-                className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
-              >
-                Settings
-              </Link>
-            )}
+
             
             {/* Premium link - visible to logged in users */}
             {userState && (

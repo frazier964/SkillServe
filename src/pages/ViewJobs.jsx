@@ -15,6 +15,8 @@ const JOB_CATEGORIES = [
   { id: 'mechanic', name: 'Mechanic', icon: '🔩', description: 'Auto repair, vehicle maintenance' },
   { id: 'cleaner', name: 'Cleaner', icon: '🧹', description: 'Residential/commercial cleaning services' },
   { id: 'chef', name: 'Chef/Cook', icon: '👨‍🍳', description: 'Catering, cooking, meal preparation' },
+  { id: 'delivery', name: 'Delivery Driver', icon: '🚗', description: 'Food delivery, package delivery, courier services' },
+  { id: 'cashier', name: 'Cashier', icon: '💳', description: 'Point of sale, customer service, transactions' },
   { id: 'tutor', name: 'Tutor', icon: '📚', description: 'Education, teaching, academic support' },
 ];
 

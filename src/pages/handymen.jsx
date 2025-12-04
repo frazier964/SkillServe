@@ -42,6 +42,42 @@ const sampleHandymen = [
     hourly: 20,
     location: 'Accra',
   },
+  {
+    id: 5,
+    name: 'Chef Ibrahim',
+    rating: 4.8,
+    reviews: 156,
+    skills: ['cooking', 'catering', 'meal prep'],
+    hourly: 25,
+    location: 'Accra',
+  },
+  {
+    id: 6,
+    name: 'David Delivery',
+    rating: 4.6,
+    reviews: 203,
+    skills: ['delivery', 'courier', 'logistics'],
+    hourly: 12,
+    location: 'Lagos',
+  },
+  {
+    id: 7,
+    name: 'Sarah Cashier',
+    rating: 4.4,
+    reviews: 98,
+    skills: ['cashier', 'customer service', 'pos systems'],
+    hourly: 14,
+    location: 'Kumasi',
+  },
+  {
+    id: 8,
+    name: 'Chef Amina',
+    rating: 4.9,
+    reviews: 187,
+    skills: ['cooking', 'baking', 'food service'],
+    hourly: 28,
+    location: 'Accra',
+  },
 ];
 
 function computeCompatibility(handyman, requiredSkills = []) {
