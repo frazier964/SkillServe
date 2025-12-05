@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Layout from "../components/Layout";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -30,7 +29,7 @@ export default function Login() {
           setRemember(true);
         }
       }
-    } catch (e) {
+    } catch (_e) {
       // ignore
     }
   }, []);
@@ -78,7 +77,7 @@ export default function Login() {
       
       // No account found
       setError("Invalid email or password. Please check your credentials or create a new account.");
-    } catch (e) {
+    } catch (_e) {
       setError("Login failed. Please try again.");
     }
     setIsLoading(false);
@@ -154,17 +153,42 @@ export default function Login() {
   };
 
   return (
-    <Layout>
-      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-100">
-        
-        {/* Animated background blobs */}
-        <div className="absolute top-20 left-20 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-72 h-72 bg-teal-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-32 left-40 w-72 h-72 bg-cyan-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
+      {/* Simple Header with SkillServe title only */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute -inset-10 opacity-50">
+          <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+          <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+        </div>
+      </div>
 
+      <header className="relative z-20 backdrop-blur-sm bg-white/10 m-4 rounded-2xl border border-white/20 shadow-xl">
+        <div className="p-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent">
+            SkillServe
+          </h1>
+          <nav className="flex gap-6 items-center">
+            <Link 
+              to="/login" 
+              className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
+            >
+              Login
+            </Link>
+            <Link 
+              to="/signup" 
+              className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
+            >
+              Signup
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      <main className="relative z-10 flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="relative w-full max-w-md">
           {/* Main Card */}
-          <div className="glass-card p-8 sm:p-10">
+          <div className="backdrop-blur-sm bg-white/90 rounded-2xl shadow-2xl p-8 sm:p-10">
             
             {/* Header Section */}
             <div className="text-center mb-10">
@@ -246,7 +270,7 @@ export default function Login() {
                     onChange={(e) => setEmail(e.target.value)}
                     onFocus={() => setFocusedField('email')}
                     onBlur={() => setFocusedField(null)}
-                    className="input-field peer"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-gray-900 placeholder-gray-500 peer"
                     required
                   />
                 </div>
@@ -275,7 +299,7 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     onFocus={() => setFocusedField('password')}
                     onBlur={() => setFocusedField(null)}
-                    className="input-field pr-12 peer"
+                    className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-gray-900 placeholder-gray-500 peer"
                     required
                   />
                   <button
@@ -373,7 +397,7 @@ export default function Login() {
             </form>
           </div>
         </div>
-      </div>
+      </main>
 
       {/* Password Reset Modal */}
       {showResetModal && (
@@ -464,6 +488,6 @@ export default function Login() {
           </div>
         </div>
       )}
-    </Layout>
+    </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Portal from '../components/Portal';
+import BackButton from '../components/BackButton';
 
 
 
@@ -178,7 +179,7 @@ export default function Handymen() {
     <Layout>
       <div className="p-4">
         <div className="mb-4 flex items-center gap-3">
-            <button onClick={() => navigate('/dashboard')} className="btn-secondary">← Back</button>
+            <BackButton />
             <h2 className="text-2xl font-semibold mb-0 text-black">Handymen</h2>
           </div>
   <p className="text-sm text-amber-400 mb-4">Search handymen by skills (comma separated). Clients can view and compare handymen here.</p>

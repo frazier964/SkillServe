@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
+import BackButton from "../components/BackButton";
 
 export default function PostJob() {
   const [title, setTitle] = useState("");
@@ -66,6 +67,9 @@ export default function PostJob() {
   return (
     <Layout>
       <div className="w-full max-w-2xl mx-auto p-6">
+        <div className="mb-6">
+          <BackButton />
+        </div>
         
         <div className="glass-card p-8 rounded-3xl bg-linear-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 border border-white/20 mb-8">
           <div className="text-center">

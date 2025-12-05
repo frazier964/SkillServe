@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { getDisplayName } from "../utils/user";
+import BackButton from "../components/BackButton";
 
 export default function Cashout() {
   const navigate = useNavigate();
@@ -97,6 +98,9 @@ export default function Cashout() {
     <Layout>
       <div className="max-w-3xl mx-auto p-6">
         <div className="glass-card p-6 rounded-2xl bg-linear-to-r from-slate-800 to-slate-900 text-white shadow-xl">
+          <div className="mb-6">
+            <BackButton />
+          </div>
           <h2 className="text-2xl font-bold">Cash out your earnings</h2>
           <p className="text-slate-300 mt-1">Available balance: <strong className="text-white">${balance.toFixed(2)}</strong></p>
 

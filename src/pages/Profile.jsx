@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Portal from '../components/Portal';
+import BackButton from '../components/BackButton';
 export default function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState({ name: '', email: '', bio: '', role: '', avatarDataUrl: '' });
   const [preview, setPreview] = useState('');
-  const [errors, setErrors] = useState({});
+  const [_errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState(null);
   const [showHelpModal, setShowHelpModal] = useState(false);
@@ -125,7 +126,8 @@ export default function Profile() {
       <div className="min-h-screen bg-[#6A0DAD] py-12">
         <div className="max-w-3xl mx-auto py-8 px-4">
         <div className="glass-card p-6 rounded-2xl border border-white/10 bg-linear-to-r from-slate-800 to-slate-900 text-white">
-          <div className="mb-4">
+          <div className="mb-6">
+            <BackButton className="mb-4" />
             <h2 className="text-2xl font-bold">Edit Profile</h2>
             <p className="text-sm text-slate-300">Update your profile details and upload a profile picture. Changes are stored locally in this demo.</p>
           </div>

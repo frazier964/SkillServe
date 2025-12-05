@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import Portal from "../components/Portal";
+import { checkTrialStatus } from "../utils/trialAccess";
 
 export default function Layout({ children }) {
   let initialUser = null;
@@ -15,6 +16,7 @@ export default function Layout({ children }) {
 
   const [userState, setUserState] = useState(initialUser);
   const role = userState && userState.role ? String(userState.role).toLowerCase() : null;
+  const [trialStatus, setTrialStatus] = useState(null);
 
   // Force check user state on component mount to catch login updates
   useEffect(() => {
@@ -34,6 +36,10 @@ export default function Layout({ children }) {
   const msgDropdownRef = useRef(null);
   const hoverCloseTimer = useRef(null);
   const [msgCoords, setMsgCoords] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const searchRef = useRef(null);
 
   useEffect(() => {
     try {
@@ -44,6 +50,23 @@ export default function Layout({ children }) {
       setMessages([]);
     }
   }, []);
+
+  // Monitor trial status for real-time updates
+  useEffect(() => {
+    const checkTrial = () => {
+      if (userState && userState.premium) {
+        const status = checkTrialStatus();
+        setTrialStatus(status);
+      } else {
+        setTrialStatus(null);
+      }
+    };
+
+    checkTrial();
+    const interval = setInterval(checkTrial, 60000); // Check every minute
+    
+    return () => clearInterval(interval);
+  }, [userState]);
 
   // Listen for message and subscription updates so the header badge and premium status update
   useEffect(() => {
@@ -120,6 +143,179 @@ export default function Layout({ children }) {
     }
   }, [showMsgPreview]);
 
+  // Search functionality
+  const performSearch = (term) => {
+    if (!term.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    const results = [];
+    const lowerTerm = term.toLowerCase();
+
+    try {
+      // Search jobs
+      const jobs = JSON.parse(localStorage.getItem('jobs')) || [];
+      jobs.forEach(job => {
+        if (job.title?.toLowerCase().includes(lowerTerm) || 
+            job.description?.toLowerCase().includes(lowerTerm) ||
+            job.category?.toLowerCase().includes(lowerTerm)) {
+          results.push({
+            type: 'job',
+            title: job.title,
+            description: job.description,
+            link: '/viewjobs',
+            icon: '💼'
+          });
+        }
+      });
+
+      // Search handymen
+      const handymen = JSON.parse(localStorage.getItem('handymen')) || [];
+      handymen.forEach(handyman => {
+        if (handyman.name?.toLowerCase().includes(lowerTerm) || 
+            handyman.skills?.toLowerCase().includes(lowerTerm) ||
+            handyman.category?.toLowerCase().includes(lowerTerm)) {
+          results.push({
+            type: 'handyman',
+            title: handyman.name,
+            description: handyman.skills || handyman.category,
+            link: '/handymen',
+            icon: '🔧'
+          });
+        }
+      });
+
+      // Search food items
+      const foodItems = [
+        'Pizza', 'Burger', 'Pasta', 'Salad', 'Sandwich', 'Tacos', 'Sushi', 'Steak',
+        'Chicken', 'Fish', 'Soup', 'Fries', 'Rice', 'Noodles', 'Dessert', 'Coffee',
+        'Tea', 'Juice', 'Smoothie', 'Ice Cream', 'Cake', 'Cookies', 'Bread'
+      ];
+      foodItems.forEach(food => {
+        if (food.toLowerCase().includes(lowerTerm)) {
+          results.push({
+            type: 'food',
+            title: food,
+            description: 'Order delicious food',
+            link: '/order-food',
+            icon: '🍕'
+          });
+        }
+      });
+
+      // Search job categories and skills
+      const jobCategories = [
+        { name: 'Plumbing', link: '/viewjobs', icon: '🔧' },
+        { name: 'Electrical', link: '/viewjobs', icon: '⚡' },
+        { name: 'Carpentry', link: '/viewjobs', icon: '🪚' },
+        { name: 'Painting', link: '/viewjobs', icon: '🎨' },
+        { name: 'Cleaning', link: '/viewjobs', icon: '🧹' },
+        { name: 'Gardening', link: '/viewjobs', icon: '🌱' },
+        { name: 'Moving', link: '/viewjobs', icon: '📦' },
+        { name: 'Tutoring', link: '/viewjobs', icon: '📚' },
+        { name: 'Chef', link: '/viewjobs', icon: '👨‍🍳' },
+        { name: 'Delivery', link: '/viewjobs', icon: '🚚' },
+        { name: 'Cashier', link: '/viewjobs', icon: '💰' }
+      ];
+      
+      jobCategories.forEach(category => {
+        if (category.name.toLowerCase().includes(lowerTerm)) {
+          results.push({
+            type: 'category',
+            title: category.name,
+            description: `Find ${category.name.toLowerCase()} jobs`,
+            link: category.link,
+            icon: category.icon
+          });
+        }
+      });
+
+      // Search pages
+      const pages = [
+        { name: 'Dashboard', link: '/', icon: '🏠', description: 'Main dashboard' },
+        { name: 'Profile', link: '/profile', icon: '👤', description: 'Edit your profile' },
+        { name: 'Settings', link: '/settings', icon: '⚙️', description: 'Account settings' },
+        { name: 'Premium', link: '/premium', icon: '⭐', description: 'Upgrade to premium' },
+        { name: 'Messages', link: '/messages', icon: '💬', description: 'View messages' },
+        { name: 'Help', link: '/help', icon: '🆘', description: 'Get help and support' },
+        { name: 'Analytics', link: '/analytics', icon: '📊', description: 'View analytics' },
+        { name: 'Cashout', link: '/cashout', icon: '💰', description: 'Withdraw earnings' },
+        { name: 'Jobs', link: '/viewjobs', icon: '🔍', description: 'Browse available jobs' },
+        { name: 'Post Job', link: '/postjob', icon: '✍️', description: 'Create a new job posting' },
+        { name: 'Handymen', link: '/handymen', icon: '🔧', description: 'Find skilled handymen' },
+        { name: 'Order Food', link: '/order-food', icon: '🍕', description: 'Order delicious food' },
+        { name: 'Student Details', link: '/studentdetails', icon: '👨‍🎓', description: 'Student information' },
+        { name: 'Availability', link: '/availability', icon: '⏰', description: 'Set your availability' }
+      ];
+      
+      pages.forEach(page => {
+        if (page.name.toLowerCase().includes(lowerTerm) || 
+            page.description.toLowerCase().includes(lowerTerm)) {
+          results.push({
+            type: 'page',
+            title: page.name,
+            description: page.description,
+            link: page.link,
+            icon: page.icon
+          });
+        }
+      });
+
+    } catch (e) {
+      console.error('Error searching:', e);
+    }
+
+    setSearchResults(results.slice(0, 8)); // Limit to 8 results
+  };
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    performSearch(value);
+    setShowSearchResults(value.length > 0);
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (searchResults.length > 0) {
+        // Navigate to the first search result when Enter is pressed
+        navigate(searchResults[0].link);
+        setSearchTerm('');
+        setShowSearchResults(false);
+      }
+    }
+  };
+
+  const handleSearchResultClick = (result) => {
+    console.log('Search result clicked:', result);
+    console.log('Filling search bar with:', result.title);
+    
+    // Fill the search bar with the clicked result's title
+    setSearchTerm(result.title);
+    
+    // Perform a new search with the filled term
+    performSearch(result.title);
+    
+    // Keep the search results open to show related items
+    setShowSearchResults(true);
+    
+    console.log('Search filled and updated with:', result.title);
+  };
+
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
      
@@ -145,9 +341,89 @@ export default function Layout({ children }) {
                 Dashboard
               </Link>
             )}
-            
 
-            
+            {/* Search Bar */}
+            <div ref={searchRef} className="relative">
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  placeholder="Search jobs, handymen, food..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  onKeyDown={handleSearchKeyDown}
+                  onFocus={() => searchTerm && setShowSearchResults(true)}
+                  className="bg-white text-black placeholder-gray-500 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64 text-sm"
+                />
+                <button 
+                  onClick={() => {
+                    if (searchResults.length > 0) {
+                      // Navigate directly when search button is clicked
+                      navigate(searchResults[0].link);
+                      setSearchTerm('');
+                      setShowSearchResults(false);
+                    }
+                  }}
+                  className="ml-2 text-white/80 hover:text-white transition-colors cursor-pointer"
+                >
+                  🔍
+                </button>
+              </div>
+                
+                {/* Search Results Dropdown */}
+                {showSearchResults && searchResults.length > 0 && (
+                  <Portal>
+                    <div className="fixed z-50 bg-white text-black rounded-lg shadow-xl border border-gray-200 w-80 max-h-96 overflow-y-auto" 
+                         style={{
+                           top: searchRef.current?.getBoundingClientRect().bottom + 8 || 0,
+                           left: searchRef.current?.getBoundingClientRect().left || 0
+                         }}>
+                      <div className="p-3">
+                        <div className="text-sm font-semibold text-gray-600 mb-2">Search Results</div>
+                        {searchResults.map((result, index) => (
+                          <div
+                            key={index}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              console.log('Search result div clicked:', result.title);
+                              console.log('Current search term before:', searchTerm);
+                              handleSearchResultClick(result);
+                              console.log('Current search term after:', result.title);
+                            }}
+                            className="w-full text-left p-3 hover:bg-gray-100 rounded-lg border-b border-gray-100 last:border-b-0 transition-colors cursor-pointer"
+                          >
+                            <div className="flex items-start gap-3">
+                              <span className="text-lg">{result.icon}</span>
+                              <div className="flex-1">
+                                <div className="font-medium text-gray-900">{result.title}</div>
+                                <div className="text-sm text-gray-600">{result.description}</div>
+                                <div className="text-xs text-purple-600 mt-1 capitalize">{result.type}</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </Portal>
+                )}
+
+                {/* No Results Message */}
+                {showSearchResults && searchResults.length === 0 && searchTerm.length > 0 && (
+                  <Portal>
+                    <div className="fixed z-50 bg-white text-black rounded-lg shadow-xl border border-gray-200 w-80" 
+                         style={{
+                           top: searchRef.current?.getBoundingClientRect().bottom + 8 || 0,
+                           left: searchRef.current?.getBoundingClientRect().left || 0
+                         }}>
+                      <div className="p-4 text-center text-gray-500">
+                        <div className="text-2xl mb-2">🔍</div>
+                        <div className="text-sm">No results found for "{searchTerm}"</div>
+                      </div>
+                    </div>
+                  </Portal>
+                )}
+              </div>
+
             {userState && role === 'client' && (
               <Link
                 to="/handymen"
@@ -256,8 +532,49 @@ export default function Layout({ children }) {
         </div>
       </header>
 
+      {/* Trial Warning Banner */}
+      {trialStatus && trialStatus.isTrialActive && trialStatus.daysLeft <= 2 && (
+        <div className="relative z-20 mx-4 mt-2 mb-4">
+          <div className="bg-linear-to-r from-orange-500/20 to-red-500/20 border border-orange-400/30 rounded-lg p-3 text-center backdrop-blur-sm">
+            <div className="flex items-center justify-center gap-2 text-orange-200">
+              <span className="text-lg">⚠️</span>
+              <span className="font-medium">
+                {trialStatus.daysLeft === 0 
+                  ? 'Trial expires today!' 
+                  : `Trial expires in ${trialStatus.daysLeft} day${trialStatus.daysLeft > 1 ? 's' : ''}!`
+                }
+              </span>
+              <button 
+                onClick={() => navigate('/premium')}
+                className="ml-2 px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded-md text-sm font-medium transition-colors"
+              >
+                Upgrade Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      
+      {/* Trial Expired Banner */}
+      {trialStatus && !trialStatus.hasAccess && trialStatus.reason === 'trial_expired' && (
+        <div className="relative z-20 mx-4 mt-2 mb-4">
+          <div className="bg-linear-to-r from-red-600/20 to-red-800/20 border border-red-400/30 rounded-lg p-3 text-center backdrop-blur-sm">
+            <div className="flex items-center justify-center gap-2 text-red-200">
+              <span className="text-lg">🔒</span>
+              <span className="font-medium">
+                Free trial ended - Premium features disabled
+              </span>
+              <button 
+                onClick={() => navigate('/premium')}
+                className="ml-2 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium transition-colors"
+              >
+                Subscribe Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sign-out confirmation modal */}
       {showSignoutConfirm && (
         <Portal>

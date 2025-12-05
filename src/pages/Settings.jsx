@@ -3,6 +3,7 @@ import Layout from "../components/Layout";
 import { db } from "../firebase/FirebaseConfig";
 import { doc, setDoc } from 'firebase/firestore';
 import { useNavigate } from "react-router-dom";
+import BackButton from "../components/BackButton";
 
 export default function Settings() {
   const [user, setUser] = useState({ name: "", email: "" });
@@ -85,7 +86,10 @@ export default function Settings() {
   return (
     <Layout>
       <div className="w-full max-w-4xl mx-auto p-6 space-y-6 bg-black/80 text-white rounded-3xl">
-        <h1 className="text-2xl font-bold">Account Settings</h1>
+        <div className="mb-6">
+          <BackButton className="mb-4" />
+          <h1 className="text-2xl font-bold">Account Settings</h1>
+        </div>
 
         <section className="p-6 rounded-2xl bg-white text-black border border-gray-200 shadow-sm">
           <h2 className="text-lg font-semibold mb-3 text-black">Profile</h2>

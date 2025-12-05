@@ -21,6 +21,9 @@ import ClientRatings from "./pages/ClientRatings";
 import Availability from "./pages/Availability";
 import Help from "./pages/Help";
 import OrderFood from "./pages/OrderFood";
+import FoodPayment from "./pages/FoodPayment";
+import OrderConfirmation from "./pages/OrderConfirmation";
+import Activities from "./pages/Activities";
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -52,6 +55,9 @@ function App() {
         <Route path="/availability" element={<ProtectedRoute><Availability /></ProtectedRoute>} />
         <Route path="/help" element={<ProtectedRoute><Help /></ProtectedRoute>} />
         <Route path="/order-food" element={<ProtectedRoute><OrderFood /></ProtectedRoute>} />
+        <Route path="/food-payment" element={<ProtectedRoute><FoodPayment /></ProtectedRoute>} />
+        <Route path="/order-confirmation" element={<ProtectedRoute><OrderConfirmation /></ProtectedRoute>} />
+        <Route path="/activities" element={<ProtectedRoute><Activities /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

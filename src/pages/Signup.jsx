@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Layout from "../components/Layout";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -10,7 +9,7 @@ export default function Signup() {
   const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [showEnableAuthLink, setShowEnableAuthLink] = useState(false);
+  const [_showEnableAuthLink, setShowEnableAuthLink] = useState(false);
   const [success, setSuccess] = useState("");
   const [passwordScore, setPasswordScore] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -234,24 +233,60 @@ export default function Signup() {
 
   const evaluatePassword = (pwd) => {
     let score = 0;
+    
+    // Length check - more points for longer passwords
+    if (pwd.length >= 6) score += 1;
     if (pwd.length >= 8) score += 1;
-    if (/[A-Z]/.test(pwd) && /[0-9]/.test(pwd)) score += 1;
-    if (/[^A-Za-z0-9]/.test(pwd)) score += 1;
+    
+    // Character variety checks
+    if (/[A-Z]/.test(pwd)) score += 1; // Has uppercase
+    if (/[a-z]/.test(pwd)) score += 1; // Has lowercase  
+    if (/[0-9]/.test(pwd)) score += 1; // Has numbers
+    if (/[^A-Za-z0-9]/.test(pwd)) score += 1; // Has special characters
+    
+    // Cap at 3 for the UI display
+    if (score > 3) score = 3;
+    
     setPasswordScore(score);
   };
 
   return (
-    <Layout>
-      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-linear-to-br from-blue-50 via-purple-50 to-pink-100">
-        
-        {/* Animated background blobs */}
-        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-32 left-40 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
+      {/* Simple Header with SkillServe title only */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute -inset-10 opacity-50">
+          <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+          <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+        </div>
+      </div>
 
+      <header className="relative z-20 backdrop-blur-sm bg-white/10 m-4 rounded-2xl border border-white/20 shadow-xl">
+        <div className="p-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent">
+            SkillServe
+          </h1>
+          <nav className="flex gap-6 items-center">
+            <Link 
+              to="/login" 
+              className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
+            >
+              Login
+            </Link>
+            <Link 
+              to="/signup" 
+              className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
+            >
+              Signup
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      <main className="relative z-10 flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="relative w-full max-w-md">
           {/* Main Card */}
-          <div className="glass-card p-8 sm:p-10">
+          <div className="backdrop-blur-sm bg-white/90 rounded-2xl shadow-2xl p-8 sm:p-10">
 
             {/* Header Section */}
             <div className="text-center mb-10">
@@ -332,7 +367,7 @@ export default function Signup() {
                     onChange={(e) => setName(e.target.value)}
                     onFocus={() => setFocusedField('name')}
                     onBlur={() => setFocusedField(null)}
-                    className="input-field"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-gray-900 placeholder-gray-500"
                     required
                   />
                 </div>
@@ -356,12 +391,12 @@ export default function Signup() {
                   <input
                     id="email"
                     type="email"
-                    placeholder="you@email.com"
+                    placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     onFocus={() => setFocusedField('email')}
                     onBlur={() => setFocusedField(null)}
-                    className="input-field"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-gray-900 placeholder-gray-500"
                     required
                   />
                 </div>
@@ -393,7 +428,7 @@ export default function Signup() {
                     }}
                     onFocus={() => setFocusedField('password')}
                     onBlur={() => setFocusedField(null)}
-                    className="input-field pr-12"
+                    className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-gray-900 placeholder-gray-500"
                     required
                   />
                   <button
@@ -461,7 +496,7 @@ export default function Signup() {
                     onChange={(e) => setConfirm(e.target.value)}
                     onFocus={() => setFocusedField('confirm')}
                     onBlur={() => setFocusedField(null)}
-                    className="input-field"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-gray-900 placeholder-gray-500"
                     required
                   />
                 </div>
@@ -557,7 +592,7 @@ export default function Signup() {
             </form>
           </div>
         </div>
-      </div>
-    </Layout>
+      </main>
+    </div>
   );
 }

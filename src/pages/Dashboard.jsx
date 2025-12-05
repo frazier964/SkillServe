@@ -757,14 +757,19 @@ export default function Dashboard() {
                 <div key={i} className="flex items-start gap-3">
                   <div className={`w-2 h-2 rounded-full mt-2 ${activity.type === 'success' ? 'bg-green-400' : activity.type === 'info' ? 'bg-blue-400' : 'bg-yellow-400'}`}></div>
                   <div className="flex-1">
-                    <p className="text-white text-sm">{activity.action}</p>
-                    <p className="text-white/50 text-xs">{activity.time}</p>
+                    <p className="text-black font-medium text-sm">{activity.action}</p>
+                    <p className="text-gray-600 text-xs">{activity.time}</p>
                   </div>
                 </div>
               ))}
             </div>
             <div className="mt-6 pt-6 border-t border-white/10">
-              <button className="w-full text-center text-white/70 hover:text-white text-sm transition-colors duration-300">View all activities →</button>
+              <button 
+                onClick={() => navigate('/activities')}
+                className="w-full text-center text-black font-medium hover:text-gray-700 text-sm transition-colors duration-300 bg-white/10 hover:bg-white/20 py-2 rounded-lg"
+              >
+                View all activities →
+              </button>
             </div>
           </div>
         </div>

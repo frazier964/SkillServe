@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
+import BackButton from '../components/BackButton';
 
 export default function OrderFood() {
   const navigate = useNavigate();
@@ -12,6 +13,9 @@ export default function OrderFood() {
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
   const [isOrdering, setIsOrdering] = useState(false);
+  const [paymentTiming, setPaymentTiming] = useState('before'); // 'before' or 'after'
+  const [paymentMethod, setPaymentMethod] = useState('mpesa');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const deliveryFee = 5.99;
 
@@ -206,7 +210,7 @@ export default function OrderFood() {
     return getCartTotal() + deliveryFee;
   };
 
-  const handlePlaceOrder = () => {
+  const handleProceedToPayment = () => {
     if (!deliveryAddress.trim()) {
       alert('Please enter a delivery address');
       return;
@@ -217,7 +221,12 @@ export default function OrderFood() {
       return;
     }
 
+    setShowPaymentModal(true);
+  };
+
+  const handleConfirmOrder = () => {
     setIsOrdering(true);
+    setShowPaymentModal(false);
     
     // Simulate order processing
     setTimeout(() => {
@@ -229,9 +238,12 @@ export default function OrderFood() {
         total: getTotalWithDelivery(),
         deliveryAddress,
         orderNotes,
+        paymentTiming,
+        paymentMethod,
         customer: user,
         orderTime: new Date().toISOString(),
-        status: 'Confirmed',
+        status: paymentTiming === 'before' ? 'Payment Required' : 'Confirmed',
+        paymentStatus: paymentTiming === 'before' ? 'Pending' : 'Cash on Delivery',
         estimatedDelivery: new Date(Date.now() + 45 * 60000).toISOString() // 45 minutes
       };
 
@@ -240,20 +252,85 @@ export default function OrderFood() {
       existingOrders.unshift(order);
       localStorage.setItem('foodOrders', JSON.stringify(existingOrders));
 
-      alert(`Order placed successfully! Your order #${order.id} will be delivered in approximately 45 minutes.`);
+      setShowOrderConfirmation(true);
       setCart([]);
       setDeliveryAddress('');
       setOrderNotes('');
       setShowCart(false);
       setIsOrdering(false);
-      navigate('/dashboard');
     }, 2000);
   };
 
+  const processPayment = () => {
+    if (paymentTiming === 'before') {
+      // Navigate to payment page with order data
+      const orderData = {
+        items: cart,
+        subtotal: getCartTotal(),
+        deliveryFee: deliveryFee,
+        total: getTotalWithDelivery(),
+        deliveryAddress,
+        orderNotes,
+        paymentTiming,
+        customer: user
+      };
+      navigate('/food-payment', { state: { orderData } });
+    } else {
+      // Process as cash on delivery
+      const order = {
+        id: 'ORD-' + Date.now(),
+        items: cart,
+        subtotal: getCartTotal(),
+        deliveryFee: deliveryFee,
+        total: getTotalWithDelivery(),
+        deliveryAddress,
+        orderNotes,
+        paymentTiming: 'after',
+        paymentMethod: 'cash',
+        customer: user,
+        orderTime: new Date().toISOString(),
+        status: 'Order Placed',
+        paymentStatus: 'Cash on Delivery'
+      };
+      
+      const existingOrders = JSON.parse(localStorage.getItem('foodOrders') || '[]');
+      existingOrders.unshift(order);
+      localStorage.setItem('foodOrders', JSON.stringify(existingOrders));
+      
+      setCart([]);
+      setDeliveryAddress('');
+      setOrderNotes('');
+      setShowCart(false);
+      alert('Order placed successfully! Payment will be collected on delivery.');
+    }
+  };
+
+
+
   return (
-    <Layout>
-      <div className="min-h-screen bg-[#6A0DAD] py-8">
+    <>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #f97316;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #ea580c;
+        }
+      `}</style>
+      <Layout>
+        <div className="min-h-screen bg-[#6A0DAD] py-8">
         <div className="max-w-7xl mx-auto px-4">
+          <div className="mb-6">
+            <BackButton />
+          </div>
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-white mb-2">🍕 Order Food & Drinks</h1>
@@ -337,7 +414,7 @@ export default function OrderFood() {
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
               <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[95vh] flex flex-col">
                 {/* Fixed Header */}
-                <div className="p-6 border-b flex-shrink-0">
+                <div className="p-6 border-b shrink-0">
                   <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-bold text-slate-900">Your Cart</h2>
                     <button 
@@ -398,7 +475,7 @@ export default function OrderFood() {
 
                 {/* Fixed Footer with Payment Details */}
                 {cart.length > 0 && (
-                  <div className="flex-shrink-0 p-6 border-t bg-slate-50">
+                  <div className="shrink-0 p-6 border-t bg-slate-50">
                     <div className="space-y-3 mb-4">
                       <input
                         type="text"
@@ -432,19 +509,153 @@ export default function OrderFood() {
                     </div>
                     
                     <button
-                      onClick={handlePlaceOrder}
+                      onClick={handleProceedToPayment}
                       disabled={isOrdering || !deliveryAddress.trim()}
                       className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-slate-400 text-white font-bold py-3 rounded-lg transition-colors"
                     >
-                      {isOrdering ? 'Placing Order...' : 'Place Order'}
+                      {isOrdering ? 'Processing...' : 'Proceed to Payment'}
                     </button>
                   </div>
                 )}
               </div>
             </div>
           )}
+
+          {/* Payment Method & Timing Modal */}
+          {showPaymentModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60" onClick={() => setShowPaymentModal(false)}></div>
+              <div className="relative bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">🍽️ Payment Options</h3>
+                  <p className="text-slate-600">Choose when and how to pay for your order</p>
+                </div>
+
+                {/* Payment Timing Selection */}
+                <div className="mb-6">
+                  <h4 className="text-lg font-semibold text-slate-900 mb-3">Payment Timing</h4>
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-slate-50">
+                      <input
+                        type="radio"
+                        name="paymentTiming"
+                        value="before"
+                        checked={paymentTiming === 'before'}
+                        onChange={(e) => setPaymentTiming(e.target.value)}
+                        className="text-orange-500"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-slate-900">💳 Pay Before Delivery</div>
+                        <div className="text-sm text-slate-600">Secure online payment now</div>
+                      </div>
+                    </label>
+                    <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-slate-50">
+                      <input
+                        type="radio"
+                        name="paymentTiming"
+                        value="after"
+                        checked={paymentTiming === 'after'}
+                        onChange={(e) => setPaymentTiming(e.target.value)}
+                        className="text-orange-500"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-slate-900">💵 Pay After Delivery</div>
+                        <div className="text-sm text-slate-600">Cash payment to delivery person</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Payment Method Selection */}
+                <div className="mb-6">
+                  <h4 className="text-lg font-semibold text-slate-900 mb-3">Payment Method</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { id: 'mpesa', name: 'M-Pesa', icon: '📱', disabled: paymentTiming === 'after' },
+                      { id: 'paypal', name: 'PayPal', icon: '🌐', disabled: paymentTiming === 'after' },
+                      { id: 'creditcard', name: 'Credit Card', icon: '💳', disabled: paymentTiming === 'after' },
+                      { id: 'debitcard', name: 'Debit Card', icon: '💳', disabled: paymentTiming === 'after' },
+                      { id: 'mastercard', name: 'Mastercard', icon: '💳', disabled: paymentTiming === 'after' },
+                      { id: 'googlepay', name: 'Google Pay', icon: '📲', disabled: paymentTiming === 'after' },
+                      { id: 'crypto', name: 'Crypto', icon: '₿', disabled: paymentTiming === 'after' },
+                      { id: 'cash', name: 'Cash', icon: '💵', disabled: paymentTiming === 'before' }
+                    ].map(method => (
+                      <label
+                        key={method.id}
+                        className={`flex flex-col items-center gap-2 p-3 border rounded-lg cursor-pointer transition-all ${
+                          method.disabled 
+                            ? 'opacity-50 cursor-not-allowed bg-slate-100' 
+                            : paymentMethod === method.id
+                              ? 'border-orange-500 bg-orange-50'
+                              : 'hover:bg-slate-50'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value={method.id}
+                          checked={paymentMethod === method.id}
+                          onChange={(e) => setPaymentMethod(e.target.value)}
+                          disabled={method.disabled}
+                          className="sr-only"
+                        />
+                        <span className="text-2xl">{method.icon}</span>
+                        <span className="text-sm font-medium text-slate-900">{method.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {paymentTiming === 'after' && (
+                    <p className="text-sm text-slate-500 mt-2 text-center">
+                      Cash payment only available for pay after delivery
+                    </p>
+                  )}
+                </div>
+
+                {/* Order Summary */}
+                <div className="bg-slate-50 p-4 rounded-lg mb-6">
+                  <h4 className="font-semibold text-slate-900 mb-2">Order Summary</h4>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>Subtotal:</span>
+                      <span>${getCartTotal().toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Delivery Fee:</span>
+                      <span>${deliveryFee.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-lg border-t pt-2">
+                      <span>Total:</span>
+                      <span>${getTotalWithDelivery().toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowPaymentModal(false)}
+                    className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
+                  >
+                    Back to Cart
+                  </button>
+                  <button
+                    onClick={processPayment}
+                    disabled={isOrdering}
+                    className="flex-1 px-4 py-3 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-400 text-white rounded-lg font-bold transition-colors"
+                  >
+                    {isOrdering ? 'Processing...' : paymentTiming === 'before' ? 'Continue to Payment' : 'Confirm Order'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+
+
+
         </div>
       </div>
     </Layout>
+    </>
   );
 }

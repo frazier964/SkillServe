@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { getDisplayName } from '../utils/user';
+import BackButton from '../components/BackButton';
 
 export default function Messages() {
   const [messages, setMessages] = useState([]);
@@ -35,7 +36,7 @@ export default function Messages() {
     try {
       localStorage.setItem('messages', JSON.stringify(msgs));
       // Notify other parts of app (and other windows) that messages changed
-      try { window.dispatchEvent(new Event('messagesUpdated')); } catch (e) {}
+      try { window.dispatchEvent(new Event('messagesUpdated')); } catch (_e) { /* ignore */ }
     } catch (e) {
       console.error('Failed to persist messages', e);
     }
@@ -76,7 +77,10 @@ export default function Messages() {
   return (
     <Layout>
       <div className="p-6 max-w-4xl mx-auto">
-        <h2 className="text-2xl font-bold mb-4 text-white">Messages</h2>
+        <div className="mb-6">
+          <BackButton className="mb-4" />
+          <h2 className="text-2xl font-bold text-white">Messages</h2>
+        </div>
 
         <div className="border rounded-lg overflow-hidden bg-slate-800">
           <div className="p-4 max-h-96 overflow-y-auto space-y-3 text-sm" style={{ color: '#e6eef8' }}>

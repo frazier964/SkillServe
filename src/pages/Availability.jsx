@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
+import BackButton from '../components/BackButton';
 
 function Availability() {
   const [availability, setAvailability] = useState({
@@ -93,7 +94,9 @@ function Availability() {
       <div className="min-h-screen bg-linear-to-r from-blue-50 via-indigo-50 to-purple-50 p-6">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
-            
+            <div className="mb-6">
+              <BackButton className="mb-4" />
+            </div>
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-800 mb-2">Availability Settings</h1>

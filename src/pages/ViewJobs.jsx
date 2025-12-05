@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Portal from '../components/Portal';
+import BackButton from '../components/BackButton';
 
 const JOB_CATEGORIES = [
   { id: 'plumber', name: 'Plumber', icon: '🔧', description: 'Fix pipes, install fixtures, water systems' },
@@ -102,7 +103,7 @@ export default function ViewJobs() {
     <Layout>
       <div className="w-full max-w-6xl mx-auto p-6">
         <div className="mb-6">
-          <button onClick={() => navigate('/dashboard')} className="text-white/80 hover:text-white transition-colors">← Back to Dashboard</button>
+          <BackButton />
         </div>
 
         {/* Header */}
@@ -146,41 +147,41 @@ export default function ViewJobs() {
         </div>
 
         {/* Jobs List */}
-        <div className="glass-card p-6 rounded-2xl bg-linear-to-br from-indigo-600/10 to-purple-600/10 border border-white/20">
-          <h2 className="text-2xl font-bold text-white mb-6">
+        <div className="glass-card p-6 rounded-2xl bg-white/95 backdrop-blur-sm border border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
             {selectedCategory === 'all' ? 'All Posted Jobs' : `Jobs in ${JOB_CATEGORIES.find(c => c.id === selectedCategory)?.name}`}
           </h2>
 
           {filteredJobs.length === 0 ? (
             <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-500/20 flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-200 flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0H8m8 0v2a2 2 0 01-2 2H10a2 2 0 01-2-2V6m8 0V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2" />
                 </svg>
               </div>
-              <p className="text-white/70 text-lg mb-2">No jobs in this category</p>
-              <p className="text-white/50 text-sm">Check back soon or browse other categories!</p>
+              <p className="text-gray-700 text-lg mb-2">No jobs in this category</p>
+              <p className="text-gray-600 text-sm">Check back soon or browse other categories!</p>
             </div>
           ) : (
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {filteredJobs.map((job, idx) => (
-                <div key={idx} className="bg-white/5 backdrop-blur-sm p-5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
+                <div key={idx} className="bg-white border border-gray-200 p-5 rounded-xl hover:shadow-lg transition-all duration-300">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-bold text-white text-lg">{job.title}</h3>
-                        <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-500/20 text-blue-300 rounded">
+                        <h3 className="font-bold text-gray-900 text-lg">{job.title}</h3>
+                        <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
                           {job.category || 'General'}
                         </span>
                       </div>
-                      <p className="text-white/70 text-sm mb-3">{job.description}</p>
+                      <p className="text-gray-700 text-sm mb-3">{job.description}</p>
                       <div className="flex flex-wrap items-center gap-4 text-sm">
-                        <span className="text-green-400 font-semibold">Budget: ${job.price || 'TBD'}</span>
-                        <span className="text-white/60">Posted by: {job.postedBy}</span>
+                        <span className="text-green-700 font-semibold">Budget: ${job.price || 'TBD'}</span>
+                        <span className="text-gray-600">Posted by: {job.postedBy}</span>
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
                           job.status === 'completed' 
-                            ? 'bg-green-500/20 text-green-400' 
-                            : 'bg-blue-500/20 text-blue-400'
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-blue-100 text-blue-800'
                         }`}>
                           {job.status || 'Active'}
                         </span>

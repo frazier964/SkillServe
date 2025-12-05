@@ -1,10 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../components/BackButton";
+import Portal from "../components/Portal";
+import { checkTrialStatus } from "../utils/trialAccess";
 
 export default function Premium() {
   const navigate = useNavigate();
   const [processing, setProcessing] = useState(false);
   const [message, setMessage] = useState(null);
+  const [showTrialExpiredModal, setShowTrialExpiredModal] = useState(false);
+  const [expiredPlan, setExpiredPlan] = useState(null);
   const [isAnnual, setIsAnnual] = useState(() => {
     try {
       const raw = localStorage.getItem('premiumIsAnnual');
@@ -17,10 +22,12 @@ export default function Premium() {
 
   useEffect(() => {
     try {
-      const u = JSON.parse(localStorage.getItem('user') || '{}');
-     
-    } catch (e) {
-      
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      if (userData) {
+        setUserState(userData);
+      }
+    } catch (_e) {
+      setUserState(null);
     }
   }, []);
 
@@ -265,6 +272,93 @@ export default function Premium() {
     )
   };
 
+  // Function to start a 3-day free trial
+  function startFreeTrial(planId) {
+    if (!user || !user.email) {
+      setMessage('No user logged in. Please login first.');
+      return;
+    }
+
+    // Check if user already had a trial for this plan
+    try {
+      const trialsRaw = localStorage.getItem('freeTrials');
+      const trials = trialsRaw ? JSON.parse(trialsRaw) : [];
+      const existingTrial = trials.find(t => t.email === user.email && t.plan === planId);
+      
+      if (existingTrial) {
+        setMessage('You have already used your free trial for this plan Pay to continue.');
+        return;
+      }
+    } catch (e) {
+      console.error('Error checking trials:', e);
+    }
+
+    setProcessing(true);
+    setMessage(null);
+
+    setTimeout(() => {
+      try {
+        const now = new Date();
+        const trialEnd = new Date(now.getTime() + (3 * 24 * 60 * 60 * 1000)); // 3 days from now
+        
+        // Save trial record
+        const trialsRaw = localStorage.getItem('freeTrials');
+        const trials = trialsRaw ? JSON.parse(trialsRaw) : [];
+        const trialEntry = {
+          email: user.email,
+          plan: planId,
+          startDate: now.toISOString(),
+          endDate: trialEnd.toISOString(),
+          active: true
+        };
+        
+        const filteredTrials = trials.filter(t => !(t.email === user.email && t.plan === planId));
+        filteredTrials.push(trialEntry);
+        localStorage.setItem('freeTrials', JSON.stringify(filteredTrials));
+
+        // Save subscription with trial flag
+        const raw = localStorage.getItem('subscriptions');
+        const subs = raw ? JSON.parse(raw) : [];
+        const entry = { 
+          email: user.email, 
+          plan: planId, 
+          since: now.toISOString(),
+          active: true,
+          isTrial: true,
+          trialEnd: trialEnd.toISOString()
+        };
+       
+        const filtered = subs.filter(s => s.email !== user.email);
+        filtered.push(entry);
+        localStorage.setItem('subscriptions', JSON.stringify(filtered));
+
+        // Update user premium status
+        try {
+          const u = JSON.parse(localStorage.getItem('user')) || {};
+          u.premium = true;
+          u.premiumPlan = planId;
+          u.isTrial = true;
+          u.trialEnd = trialEnd.toISOString();
+          localStorage.setItem('user', JSON.stringify(u));
+        } catch (e) {
+          console.error('Failed to update user premium status', e);
+        }
+
+        window.dispatchEvent(new CustomEvent('subscriptionsUpdated', { detail: entry }));
+
+        setProcessing(false);
+        const daysLeft = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
+        setMessage(`Free trial started! You have ${daysLeft} days to try ${planId}. Payment will be required after trial ends.`);
+        
+        setTimeout(() => navigate('/dashboard'), 2000);
+      } catch (e) {
+        console.error(e);
+        setProcessing(false);
+        setMessage('Failed to start free trial. Try again.');
+      }
+    }, 900);
+  }
+
   function saveSubscription(planId) {
     if (!user || !user.email) {
       setMessage('No user logged in. Please login first.');
@@ -274,36 +368,42 @@ export default function Premium() {
     setProcessing(true);
     setMessage(null);
 
-    
     setTimeout(() => {
       try {
         const now = new Date().toISOString();
         
         const raw = localStorage.getItem('subscriptions');
         const subs = raw ? JSON.parse(raw) : [];
-        const entry = { email: user.email, plan: planId, since: now, active: true };
+        const entry = { 
+          email: user.email, 
+          plan: planId, 
+          since: now, 
+          active: true,
+          isTrial: false
+        };
        
         const filtered = subs.filter(s => s.email !== user.email);
         filtered.push(entry);
         localStorage.setItem('subscriptions', JSON.stringify(filtered));
 
-       
+        // Update user premium status
         try {
           const u = JSON.parse(localStorage.getItem('user')) || {};
           u.premium = true;
           u.premiumPlan = planId;
+          u.isTrial = false;
+          delete u.trialEnd;
           localStorage.setItem('user', JSON.stringify(u));
         } catch (e) {
           console.error('Failed to update user premium status', e);
         }
 
-        
         window.dispatchEvent(new CustomEvent('subscriptionsUpdated', { detail: entry }));
 
         setProcessing(false);
         setMessage('Subscription successful — thank you!');
         
-  setTimeout(() => navigate('/dashboard'), 900);
+        setTimeout(() => navigate('/dashboard'), 900);
       } catch (e) {
         console.error(e);
         setProcessing(false);
@@ -356,17 +456,26 @@ export default function Premium() {
 
   
   
+  // Check for trial expiration on component mount and updates
   useEffect(() => {
-    const onSub = () => {
-      const raw = localStorage.getItem('subscriptions');
-      const subs = raw ? JSON.parse(raw) : [];
-      const s = subs.find(x => x.email === user.email && x.active);
-      if (s) {
-        setMessage(`Active plan: ${s.plan} (since ${new Date(s.since).toLocaleDateString()})`);
+    const checkAndHandleTrialStatus = () => {
+      const status = checkTrialStatus();
+      
+      if (!status.hasAccess && status.reason === 'trial_expired') {
+        setExpiredPlan(status.expiredPlan);
+        setShowTrialExpiredModal(true);
+        setMessage(`Your free trial has ended. Please subscribe to continue accessing premium features.`);
+      } else if (status.hasAccess && status.isTrialActive) {
+        setMessage(`Free trial: ${status.subscription.plan} (${status.daysLeft} days remaining)`);
+      } else if (status.hasAccess && !status.isTrialActive) {
+        setMessage(`Active plan: ${status.subscription.plan} (since ${new Date(status.subscription.since).toLocaleDateString()})`);
       } else {
-        
         if (!processing) setMessage(null);
       }
+    };
+
+    const onSub = () => {
+      checkAndHandleTrialStatus();
     };
 
     window.addEventListener('subscriptionsUpdated', onSub);
@@ -380,12 +489,17 @@ export default function Premium() {
   }, []);
 
   return (
-    <div className="min-h-screen w-full flex items-center bg-transparent">
-      <div className="w-full max-w-7xl mx-auto glass-card p-8 rounded-3xl border border-white/10 bg-linear-to-r from-slate-800 to-slate-900 text-white min-h-screen flex flex-col">
-        <h2 className="text-3xl font-bold mb-3">Go Premium</h2>
-        <p className="text-sm text-slate-300 mb-4">Upgrade your account to get faster matchmaking, priority leads, and better visibility. Choose the plan that fits you.</p>
+    <div className="min-h-screen w-full bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="w-full h-full glass-card p-6 lg:p-8 bg-linear-to-r from-slate-800/30 to-slate-900/30 text-white min-h-screen flex flex-col backdrop-blur-sm">
+        <div className="mb-6">
+          <BackButton className="mb-4" />
+        </div>
+        <div className="text-center mb-8">
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4 bg-linear-to-r from-yellow-400 to-purple-400 bg-clip-text text-transparent">Go Premium</h2>
+          <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-6">Upgrade your account to get faster matchmaking, priority leads, and better visibility. Choose the plan that fits you.</p>
+        </div>
 
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center justify-center gap-3 mb-8">
           <div className="text-sm text-slate-300">Billing:</div>
           <div className="inline-flex rounded-md bg-slate-900/40 p-1">
             <button onClick={() => setIsAnnual(false)} className={`px-3 py-1 rounded-md text-sm ${!isAnnual ? 'bg-white/6 text-white' : 'text-slate-300'}`}>Monthly</button>
@@ -394,59 +508,63 @@ export default function Premium() {
           <div className="ml-4 text-xs text-slate-400">Toggle to view monthly or annual pricing.</div>
         </div>
 
-        <div ref={gridRef} className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 overflow-auto scroll-smooth" tabIndex={0}>
+        <div ref={gridRef} className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 px-4 lg:px-8 overflow-auto scroll-smooth" tabIndex={0}>
           {plans.map(plan => (
-            <div key={plan.id} data-plan-card tabIndex={0} className="relative overflow-hidden p-6 rounded-2xl border border-white/10 bg-slate-800/60 backdrop-blur-md shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900">
+            <div key={plan.id} data-plan-card tabIndex={0} className="relative overflow-hidden p-6 lg:p-8 rounded-3xl border border-white/20 bg-slate-800/80 backdrop-blur-xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 min-h-[400px] flex flex-col">
               {plan.id === 'annual-saver' && (
                 <div className="absolute top-3 left-3 bg-yellow-400 text-slate-900 px-3 py-1 rounded-full text-xs font-semibold shadow-md z-10">Best Value</div>
               )}
               {/* decorative gradient/pattern background */}
               <div className={`absolute -top-8 -right-8 w-48 h-48 rounded-full blur-3xl pointer-events-none bg-linear-to-br ${accentMap[plan.id] || 'from-purple-500/30 to-pink-400/20'}`} />
               <div className="absolute -bottom-10 -left-10 w-64 h-64 rounded-full opacity-10 pointer-events-none bg-white" />
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="text-white/90">{iconMap[plan.id]}</div>
-                  <h3 className="text-lg font-semibold text-white mb-0">{plan.title}</h3>
+              <div className="relative z-10 flex-1 flex flex-col">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="text-white/90 p-2 bg-white/10 rounded-lg">{iconMap[plan.id]}</div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-white mb-2 leading-tight">{plan.title}</h3>
+                    <div className="text-yellow-300 font-bold text-3xl mb-2">{isAnnual ? plan.annualPrice : plan.monthlyPrice}</div>
+                  </div>
                 </div>
-                <div className="text-yellow-300 font-bold text-2xl mb-3">{isAnnual ? plan.annualPrice : plan.monthlyPrice}</div>
-                {plan.description && <div className="text-sm text-slate-400 mb-3">{plan.description}</div>}
+                {plan.description && <div className="text-sm text-slate-300 mb-4 leading-relaxed">{plan.description}</div>}
               </div>
-              <ul className="text-sm text-slate-300 mb-4 space-y-1 min-h-[92px]">
+              <ul className="text-sm text-slate-300 mb-6 space-y-2 flex-1">
                 {plan.benefits.map((b, i) => (
-                  <li key={i}>• {b}</li>
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="text-green-400 mt-1">✓</span>
+                    <span>{b}</span>
+                  </li>
                 ))}
               </ul>
-              <div className="flex items-center justify-between w-full">
+              <div className="flex flex-col gap-3 mt-auto">
                 {user && user.premium && user.premiumPlan === plan.id ? (
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-green-300">Active</span>
+                  <div className="text-center">
+                    <div className="bg-green-600/20 border border-green-400/30 rounded-lg p-3 mb-3">
+                      <span className="text-green-300 font-semibold block mb-2">✓ Active Plan</span>
+                    </div>
                     <button
-                      className="px-3 py-1 rounded-md bg-red-600 text-white text-sm"
+                      className="w-full px-4 py-2 rounded-lg bg-red-600/80 hover:bg-red-600 text-white font-medium transition-colors"
                       onClick={cancelSubscription}
                       disabled={processing}
-                    >{processing ? 'Cancelling...' : 'Cancel'}</button>
+                    >{processing ? 'Cancelling...' : 'Cancel Subscription'}</button>
                   </div>
                 ) : (
-                  <>
-                    <>
-                      <button
-                        className="px-4 py-2 rounded-md bg-linear-to-r from-yellow-500 to-yellow-400 text-slate-900 font-semibold hover:scale-105 transition-transform"
-                        onClick={() => navigate('/premium/checkout', { state: { plan } })}
-                        disabled={processing}
-                      >
-                        Subscribe
-                      </button>
-                      <button
-                        className="ml-2 px-3 py-2 rounded-md bg-transparent border border-white/10 text-white text-sm"
-                        onClick={() => saveSubscription(plan.id)}
-                        disabled={processing}
-                        title="Quick mock subscribe (no payment)"
-                      >
-                        Quick Mock
-                      </button>
-                    </>
-                    <div className="text-xs text-slate-400">For: YOU</div>
-                  </>
+                  <div className="space-y-2">
+                    <button
+                      className="w-full px-6 py-3 rounded-lg bg-linear-to-r from-yellow-500 to-yellow-400 text-slate-900 font-bold hover:scale-105 transition-transform shadow-lg"
+                      onClick={() => navigate('/premium/checkout', { state: { plan } })}
+                      disabled={processing}
+                    >
+                      Subscribe Now
+                    </button>
+                    <button
+                      className="w-full px-4 py-2 rounded-lg bg-transparent border border-blue-400/40 text-blue-300 text-sm hover:bg-blue-400/10 transition-colors font-medium"
+                      onClick={() => startFreeTrial(plan.id)}
+                      disabled={processing}
+                      title="Start 3-day free trial (payment required after trial)"
+                    >
+                      Start 3-Day Free Trial
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -455,8 +573,58 @@ export default function Premium() {
 
         {message && <div className="mt-4 text-sm text-green-300">{message}</div>}
       </div>
+      
+      {/* Trial Expiration Modal */}
+      {showTrialExpiredModal && (
+        <Portal>
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/70" onClick={() => setShowTrialExpiredModal(false)} />
+            <div className="relative bg-linear-to-br from-slate-800 to-slate-900 text-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-8 z-10 border border-white/20">
+              <div className="text-center mb-6">
+                <div className="text-6xl mb-4">⏰</div>
+                <h2 className="text-2xl font-bold mb-2 text-red-400">Trial Expired</h2>
+                <p className="text-slate-300 leading-relaxed">
+                  Your 3-day free trial for <span className="font-semibold text-white">{expiredPlan}</span> has ended.
+                  <br /><br />
+                  Subscribe now to continue accessing premium features and maintain your enhanced experience.
+                </p>
+              </div>
+              
+              <div className="space-y-3">
+                <button 
+                  onClick={() => {
+                    setShowTrialExpiredModal(false);
+                    // Scroll to plans or refresh to show available plans
+                    window.location.reload();
+                  }}
+                  className="w-full px-6 py-3 rounded-lg bg-linear-to-r from-yellow-500 to-orange-500 text-slate-900 font-bold hover:scale-105 transition-all duration-200 shadow-lg"
+                >
+                  Choose Subscription Plan
+                </button>
+                
+                <button 
+                  onClick={() => {
+                    setShowTrialExpiredModal(false);
+                    navigate('/dashboard');
+                  }}
+                  className="w-full px-4 py-2 rounded-lg bg-transparent border border-white/30 text-white hover:bg-white/10 transition-colors"
+                >
+                  Return to Dashboard
+                </button>
+              </div>
+              
+              <div className="mt-6 pt-4 border-t border-white/20 text-center">
+                <p className="text-xs text-slate-400">
+                  Premium features are now disabled until you subscribe
+                </p>
+              </div>
+            </div>
+          </div>
+        </Portal>
+      )}
+      
       {/* fixed bottom bar with quick actions */}
-      <div className="fixed bottom-4 left-0 right-0 flex justify-center z-50 pointer-events-none">
+      <div className="fixed bottom-4 left-0 right-0 flex justify-center z-40 pointer-events-none">
         <div className="pointer-events-auto bg-slate-800/70 backdrop-blur-md px-4 py-3 rounded-full border border-white/10 shadow-lg">
           <button className="px-4 py-2 rounded-md bg-slate-700 text-white" onClick={() => navigate('/dashboard')}>Back</button>
         </div>

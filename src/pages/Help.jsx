@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
+import BackButton from '../components/BackButton';
 
 export default function Help() {
   const navigate = useNavigate();
@@ -106,6 +107,9 @@ export default function Help() {
       <div className="min-h-screen bg-[#6A0DAD] py-12">
         <div className="max-w-2xl mx-auto p-6">
           <div className="glass-card p-8 rounded-2xl border border-white/10 bg-linear-to-r from-slate-800 to-slate-900 text-white">
+            <div className="mb-6">
+              <BackButton className="mb-4" />
+            </div>
             <div className="mb-6 text-center">
               <div className="text-4xl mb-4">🆘</div>
               <h1 className="text-3xl font-bold mb-2">Help & Support</h1>

@@ -29,7 +29,7 @@ export default function Payment() {
   const [scanError, setScanError] = useState('');
   const scannerRef = useRef(null);
   const [paypalReady, setPaypalReady] = useState(false);
-  const [mpesaStatus, setMpesaStatus] = useState(null);
+  const [_mpesaStatus, setMpesaStatus] = useState(null);
   const paypalClientId = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_PAYPAL_CLIENT_ID : undefined;
 
   function handleChange(e) {
@@ -123,7 +123,7 @@ export default function Payment() {
           u.premium = true;
           u.premiumPlan = plan?.id || 'unknown';
           localStorage.setItem('user', JSON.stringify(u));
-        } catch (e) {}
+        } catch (_e) { /* ignore */ }
 
         window.dispatchEvent(new CustomEvent('subscriptionsUpdated', { detail: entry }));
 
