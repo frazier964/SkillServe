@@ -18,6 +18,7 @@ export default function Premium() {
       return false;
     }
   });
+  const [userState, setUserState] = useState(null);
   const gridRef = useRef(null);
 
   useEffect(() => {

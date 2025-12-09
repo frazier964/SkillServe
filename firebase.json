@@ -8,5 +8,15 @@
         "destination": "/index.html"
       }
     ]
-  }
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": [
+    {
+      "bucket": "skillserve-c4c53.firebasestorage.app",
+      "rules": "storage.rules"
+    }
+  ]
 }

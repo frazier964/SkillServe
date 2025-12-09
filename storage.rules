@@ -1,0 +1,74 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the file
+    function isOwner() {
+      return request.auth.uid == resource.metadata.userId;
+    }
+
+    // ==================== User Avatars ====================
+    // Users can upload and delete their own avatars
+    match /users/{userId}/avatar/{filename} {
+      allow read: if true;
+      allow write: if isAuthenticated() && request.auth.uid == userId && 
+                      request.resource.size < 5 * 1024 * 1024 && // 5MB max
+                      request.resource.contentType.matches('image/.*');
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ==================== User Documents ====================
+    // Users can upload documents for their profile
+    match /users/{userId}/documents/{filename} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAuthenticated() && request.auth.uid == userId && 
+                      request.resource.size < 10 * 1024 * 1024 && // 10MB max
+                      request.resource.contentType.matches('(application|image)/.*');
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ==================== Job Attachments ====================
+    // Users can upload attachments for jobs
+    match /jobs/{jobId}/attachments/{filename} {
+      allow read: if true;
+      allow write: if isAuthenticated() && 
+                      request.resource.size < 20 * 1024 * 1024 && // 20MB max
+                      request.resource.contentType.matches('.*');
+      allow delete: if isAuthenticated();
+    }
+
+    // ==================== Food Images ====================
+    // Only admins can manage food images
+    match /food/{itemId}/images/{filename} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+
+    // ==================== User Gallery ====================
+    // Users can manage their own gallery
+    match /gallery/{userId}/{filename} {
+      allow read: if true;
+      allow write: if isAuthenticated() && request.auth.uid == userId && 
+                      request.resource.size < 5 * 1024 * 1024 && // 5MB max
+                      request.resource.contentType.matches('image/.*');
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ==================== Temporary Uploads ====================
+    // Temporary upload bucket for processing
+    match /temp/{userId}/{filename} {
+      allow read, write, delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Default: deny all other access
+    match /{allPaths=**} {
+      allow read, write, delete: if false;
+    }
+  }
+}

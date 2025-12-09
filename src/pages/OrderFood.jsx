@@ -15,7 +15,6 @@ export default function OrderFood() {
   const [isOrdering, setIsOrdering] = useState(false);
   const [paymentTiming, setPaymentTiming] = useState('before'); // 'before' or 'after'
   const [paymentMethod, setPaymentMethod] = useState('mpesa');
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const deliveryFee = 5.99;
 
@@ -221,12 +220,22 @@ export default function OrderFood() {
       return;
     }
 
-    setShowPaymentModal(true);
+    // Navigate directly to payment page with order data
+    const orderData = {
+      items: cart,
+      subtotal: getCartTotal(),
+      deliveryFee: deliveryFee,
+      total: getTotalWithDelivery(),
+      deliveryAddress,
+      orderNotes,
+      paymentTiming: 'before',
+      customer: user
+    };
+    navigate('/food-payment', { state: { orderData } });
   };
 
   const handleConfirmOrder = () => {
     setIsOrdering(true);
-    setShowPaymentModal(false);
     
     // Simulate order processing
     setTimeout(() => {
@@ -521,134 +530,7 @@ export default function OrderFood() {
             </div>
           )}
 
-          {/* Payment Method & Timing Modal */}
-          {showPaymentModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
-              <div className="absolute inset-0 bg-black/60" onClick={() => setShowPaymentModal(false)}></div>
-              <div className="relative bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-slate-900 mb-2">🍽️ Payment Options</h3>
-                  <p className="text-slate-600">Choose when and how to pay for your order</p>
-                </div>
 
-                {/* Payment Timing Selection */}
-                <div className="mb-6">
-                  <h4 className="text-lg font-semibold text-slate-900 mb-3">Payment Timing</h4>
-                  <div className="space-y-3">
-                    <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-slate-50">
-                      <input
-                        type="radio"
-                        name="paymentTiming"
-                        value="before"
-                        checked={paymentTiming === 'before'}
-                        onChange={(e) => setPaymentTiming(e.target.value)}
-                        className="text-orange-500"
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium text-slate-900">💳 Pay Before Delivery</div>
-                        <div className="text-sm text-slate-600">Secure online payment now</div>
-                      </div>
-                    </label>
-                    <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-slate-50">
-                      <input
-                        type="radio"
-                        name="paymentTiming"
-                        value="after"
-                        checked={paymentTiming === 'after'}
-                        onChange={(e) => setPaymentTiming(e.target.value)}
-                        className="text-orange-500"
-                      />
-                      <div className="flex-1">
-                        <div className="font-medium text-slate-900">💵 Pay After Delivery</div>
-                        <div className="text-sm text-slate-600">Cash payment to delivery person</div>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-
-                {/* Payment Method Selection */}
-                <div className="mb-6">
-                  <h4 className="text-lg font-semibold text-slate-900 mb-3">Payment Method</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      { id: 'mpesa', name: 'M-Pesa', icon: '📱', disabled: paymentTiming === 'after' },
-                      { id: 'paypal', name: 'PayPal', icon: '🌐', disabled: paymentTiming === 'after' },
-                      { id: 'creditcard', name: 'Credit Card', icon: '💳', disabled: paymentTiming === 'after' },
-                      { id: 'debitcard', name: 'Debit Card', icon: '💳', disabled: paymentTiming === 'after' },
-                      { id: 'mastercard', name: 'Mastercard', icon: '💳', disabled: paymentTiming === 'after' },
-                      { id: 'googlepay', name: 'Google Pay', icon: '📲', disabled: paymentTiming === 'after' },
-                      { id: 'crypto', name: 'Crypto', icon: '₿', disabled: paymentTiming === 'after' },
-                      { id: 'cash', name: 'Cash', icon: '💵', disabled: paymentTiming === 'before' }
-                    ].map(method => (
-                      <label
-                        key={method.id}
-                        className={`flex flex-col items-center gap-2 p-3 border rounded-lg cursor-pointer transition-all ${
-                          method.disabled 
-                            ? 'opacity-50 cursor-not-allowed bg-slate-100' 
-                            : paymentMethod === method.id
-                              ? 'border-orange-500 bg-orange-50'
-                              : 'hover:bg-slate-50'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value={method.id}
-                          checked={paymentMethod === method.id}
-                          onChange={(e) => setPaymentMethod(e.target.value)}
-                          disabled={method.disabled}
-                          className="sr-only"
-                        />
-                        <span className="text-2xl">{method.icon}</span>
-                        <span className="text-sm font-medium text-slate-900">{method.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {paymentTiming === 'after' && (
-                    <p className="text-sm text-slate-500 mt-2 text-center">
-                      Cash payment only available for pay after delivery
-                    </p>
-                  )}
-                </div>
-
-                {/* Order Summary */}
-                <div className="bg-slate-50 p-4 rounded-lg mb-6">
-                  <h4 className="font-semibold text-slate-900 mb-2">Order Summary</h4>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span>Subtotal:</span>
-                      <span>${getCartTotal().toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Delivery Fee:</span>
-                      <span>${deliveryFee.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-lg border-t pt-2">
-                      <span>Total:</span>
-                      <span>${getTotalWithDelivery().toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setShowPaymentModal(false)}
-                    className="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
-                  >
-                    Back to Cart
-                  </button>
-                  <button
-                    onClick={processPayment}
-                    disabled={isOrdering}
-                    className="flex-1 px-4 py-3 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-400 text-white rounded-lg font-bold transition-colors"
-                  >
-                    {isOrdering ? 'Processing...' : paymentTiming === 'before' ? 'Continue to Payment' : 'Confirm Order'}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
 
 

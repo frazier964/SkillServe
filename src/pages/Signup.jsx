@@ -9,7 +9,7 @@ export default function Signup() {
   const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [_showEnableAuthLink, setShowEnableAuthLink] = useState(false);
+  const [_showEnableAuthLink, _setShowEnableAuthLink] = useState(false);
   const [success, setSuccess] = useState("");
   const [passwordScore, setPasswordScore] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -251,7 +251,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
       {/* Simple Header with SkillServe title only */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute -inset-10 opacity-50">
@@ -263,7 +263,7 @@ export default function Signup() {
 
       <header className="relative z-20 backdrop-blur-sm bg-white/10 m-4 rounded-2xl border border-white/20 shadow-xl">
         <div className="p-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent">
             SkillServe
           </h1>
           <nav className="flex gap-6 items-center">
@@ -290,12 +290,12 @@ export default function Signup() {
 
             {/* Header Section */}
             <div className="text-center mb-10">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-r from-blue-500 to-purple-600 rounded-2xl mb-6 shadow-lg shadow-blue-500/30 animate-bounce">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-6 shadow-lg shadow-blue-500/30 animate-bounce">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
               </div>
-              <h1 className="text-4xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
                 Join Us
               </h1>
               <p className="text-gray-600 text-base leading-relaxed">
@@ -314,7 +314,7 @@ export default function Signup() {
                 </div>
               )}
 
-              {showEnableAuthLink && (
+              {_showEnableAuthLink && (
                 <div className="mt-3 text-sm text-gray-700 flex flex-col sm:flex-row sm:items-center sm:gap-3">
                   <a
                     href="https://console.firebase.google.com/project/skillserve-d82a8/authentication/providers"
@@ -540,7 +540,7 @@ export default function Signup() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 transform  hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 mt-2"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 transform  hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 mt-2"
               >
                 {isLoading ? (
                   <>
@@ -557,9 +557,9 @@ export default function Signup() {
 
               {/* Divider */}
               <div className="flex items-center gap-4 my-8">
-                <div className="flex-1 h-px bg-linear-to-r from-gray-200 via-gray-300 to-transparent"></div>
+                <div className="flex-1 h-px bg-gradient-to-r from-gray-200 via-gray-300 to-transparent"></div>
                 <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider px-2">or continue with</span>
-                <div className="flex-1 h-px bg-linear-to-l from-gray-200 via-gray-300 to-transparent"></div>
+                <div className="flex-1 h-px bg-gradient-to-l from-gray-200 via-gray-300 to-transparent"></div>
               </div>
 
               {/* Google Sign Up */}
