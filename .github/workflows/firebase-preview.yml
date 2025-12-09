@@ -29,7 +29,7 @@ jobs:
         run: |
           CHANNEL_ID=pr-${PR_NUMBER}
           echo "Deploying preview to channel: $CHANNEL_ID"
-          npx firebase-tools@latest hosting:channel:deploy "$CHANNEL_ID" --expires 7d --only hosting --token "$FIREBASE_TOKEN" | tee deploy_output.txt
+          npx firebase-tools@latest hosting:channel:deploy "$CHANNEL_ID" --expires 7d --only hosting --project skillserve-c4c53 --token "$FIREBASE_TOKEN" | tee deploy_output.txt
           # Extract first HTTPS URL from the deploy output (the preview URL)
           PREVIEW_URL=$(grep -oE 'https?://[^ ]+' deploy_output.txt | sed -n '1p' || true)
           echo "Preview URL=$PREVIEW_URL" >> $GITHUB_OUTPUT

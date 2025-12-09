@@ -26,4 +26,4 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          npx firebase-tools@latest deploy --only hosting --token "$FIREBASE_TOKEN"
+          npx firebase-tools@latest deploy --only hosting --project skillserve-c4c53 --token "$FIREBASE_TOKEN"
