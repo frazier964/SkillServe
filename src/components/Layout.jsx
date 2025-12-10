@@ -17,6 +17,7 @@ export default function Layout({ children }) {
   const [userState, setUserState] = useState(initialUser);
   const role = userState && userState.role ? String(userState.role).toLowerCase() : null;
   const [trialStatus, setTrialStatus] = useState(null);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   // Force check user state on component mount to catch login updates
   useEffect(() => {
@@ -328,22 +329,39 @@ export default function Layout({ children }) {
       </div>
 
   <header className="relative z-20 glass-card m-4 rounded-2xl border border-white/20 bg-linear-to-r from-indigo-600/20 via-purple-600/20 to-pink-600/20">
-        <div className="p-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent">
+        <div className="p-4 flex justify-between items-center gap-4">
+          <h1 className="text-xl md:text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent whitespace-nowrap">
             SkillServe
           </h1>
-          <nav className="flex gap-6 items-center">
+
+          {/* Mobile Menu Button */}
+          <button 
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            className="md:hidden text-white hover:text-purple-300 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {showMobileMenu ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex gap-6 items-center flex-1 justify-end">
             {userState && (
               <Link 
                 to="/" 
-                className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
+                className="text-white/80 hover:text-white transition-colors duration-300 font-medium text-sm"
               >
                 Dashboard
               </Link>
             )}
 
             {/* Search Bar */}
-            <div ref={searchRef} className="relative">
+            <div ref={searchRef} className="relative hidden lg:block">
               <div className="flex items-center">
                 <input
                   type="text"
@@ -352,7 +370,7 @@ export default function Layout({ children }) {
                   onChange={handleSearch}
                   onKeyDown={handleSearchKeyDown}
                   onFocus={() => searchTerm && setShowSearchResults(true)}
-                  className="bg-white text-black placeholder-gray-500 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64 text-sm"
+                  className="bg-white text-black placeholder-gray-500 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-48 text-sm"
                 />
                 <button 
                   onClick={() => {
@@ -427,7 +445,7 @@ export default function Layout({ children }) {
             {userState && role === 'client' && (
               <Link
                 to="/handymen"
-                className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
+                className="text-white/80 hover:text-white transition-colors duration-300 font-medium text-sm"
               >
                 Handymen
               </Link>
@@ -435,7 +453,7 @@ export default function Layout({ children }) {
             {userState && role === 'client' && (
               <Link 
                 to="/postjob" 
-                className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
+                className="text-white/80 hover:text-white transition-colors duration-300 font-medium text-sm"
               >
                 Post Job
               </Link>
@@ -444,14 +462,14 @@ export default function Layout({ children }) {
             
             {/* Premium link - visible to logged in users */}
             {userState && (
-              <button onClick={() => navigate('/premium')} className="text-yellow-300 hover:text-yellow-200 transition-colors duration-300 font-medium px-3 py-1 rounded-md">
-                {userState.premium ? `Premium ✓` : `Go Premium`}
+              <button onClick={() => navigate('/premium')} className="text-yellow-300 hover:text-yellow-200 transition-colors duration-300 font-medium text-sm px-2 md:px-3 py-1 rounded-md">
+                {userState.premium ? `Premium ✓` : `Premium`}
               </button>
             )}
             {!userState && (
               <Link 
                 to="/login" 
-                className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
+                className="text-white/80 hover:text-white transition-colors duration-300 font-medium text-sm"
               >
                 Login
               </Link>
@@ -459,16 +477,16 @@ export default function Layout({ children }) {
             {!userState && (
               <Link 
                 to="/signup" 
-                className="text-white/80 hover:text-white transition-colors duration-300 font-medium"
+                className="text-white/80 hover:text-white transition-colors duration-300 font-medium text-sm"
               >
                 Signup
               </Link>
             )}
             {userState && (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
                 <button 
                   onClick={() => setShowSignoutConfirm(true)} 
-                  className="bg-linear-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:scale-105 transition-all duration-300 font-medium"
+                  className="bg-linear-to-r from-red-500 to-pink-500 text-white px-2 md:px-4 py-2 rounded-lg hover:scale-105 transition-all duration-300 font-medium text-sm"
                 >
                   Logout
                 </button>
@@ -483,7 +501,7 @@ export default function Layout({ children }) {
                 }} onMouseLeave={() => {
                   hoverCloseTimer.current = setTimeout(() => setShowMsgPreview(false), 150);
                 }}>
-                  <span className="text-white/80 hover:text-white transition-colors duration-300 font-medium">Messages</span>
+                  <span className="text-white/80 hover:text-white transition-colors duration-300 font-medium text-sm">Messages</span>
                   {messages && messages.length > 0 && (
                     <span className="absolute -top-2 -right-6 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">{messages.length}</span>
                   )}
@@ -530,6 +548,100 @@ export default function Layout({ children }) {
 
           </nav>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {showMobileMenu && (
+          <div className="md:hidden border-t border-white/20 p-4 space-y-3 bg-slate-900/50 backdrop-blur-sm rounded-b-lg">
+            {userState && (
+              <Link 
+                to="/" 
+                onClick={() => setShowMobileMenu(false)}
+                className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
+              >
+                Dashboard
+              </Link>
+            )}
+
+            {userState && role === 'client' && (
+              <>
+                <Link
+                  to="/handymen"
+                  onClick={() => setShowMobileMenu(false)}
+                  className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
+                >
+                  Handymen
+                </Link>
+                <Link 
+                  to="/postjob"
+                  onClick={() => setShowMobileMenu(false)}
+                  className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
+                >
+                  Post Job
+                </Link>
+              </>
+            )}
+
+            <Link
+              to="/messages"
+              onClick={() => setShowMobileMenu(false)}
+              className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
+            >
+              Messages {messages && messages.length > 0 && `(${messages.length})`}
+            </Link>
+
+            <Link
+              to="/premium"
+              onClick={() => setShowMobileMenu(false)}
+              className="block text-yellow-300 hover:text-yellow-200 transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
+            >
+              {userState?.premium ? 'Premium ✓' : 'Go Premium'}
+            </Link>
+
+            <Link
+              to="/profile"
+              onClick={() => setShowMobileMenu(false)}
+              className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
+            >
+              Profile
+            </Link>
+
+            <Link
+              to="/settings"
+              onClick={() => setShowMobileMenu(false)}
+              className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
+            >
+              Settings
+            </Link>
+
+            {userState && (
+              <button 
+                onClick={() => setShowSignoutConfirm(true)}
+                className="w-full bg-linear-to-r from-red-500 to-pink-500 text-white font-medium py-2 px-3 rounded-lg hover:scale-105 transition-all duration-300"
+              >
+                Logout
+              </button>
+            )}
+
+            {!userState && (
+              <>
+                <Link 
+                  to="/login"
+                  onClick={() => setShowMobileMenu(false)}
+                  className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/signup"
+                  onClick={() => setShowMobileMenu(false)}
+                  className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
+                >
+                  Signup
+                </Link>
+              </>
+            )}
+          </div>
+        )}
       </header>
 
       {/* Trial Warning Banner */}
