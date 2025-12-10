@@ -18,6 +18,7 @@ export default function Layout({ children }) {
   const role = userState && userState.role ? String(userState.role).toLowerCase() : null;
   const [trialStatus, setTrialStatus] = useState(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1000 : false);
 
   // Force check user state on component mount to catch login updates
   useEffect(() => {
@@ -29,6 +30,16 @@ export default function Layout({ children }) {
     } catch (e) {
       // ignore
     }
+
+    // Handle window resize
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1000;
+      setIsMobile(mobile);
+      if (!mobile) setShowMobileMenu(false);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
   const [messages, setMessages] = useState([]);
   const [showMsgPreview, setShowMsgPreview] = useState(false);
@@ -330,27 +341,28 @@ export default function Layout({ children }) {
 
   <header className="relative z-20 glass-card m-4 rounded-2xl border border-white/20 bg-linear-to-r from-indigo-600/20 via-purple-600/20 to-pink-600/20">
         <div className="p-4 flex justify-between items-center gap-4">
-          <h1 className="text-xl md:text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent whitespace-nowrap">
+          <h1 className="text-xl sm:text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent">
             SkillServe
           </h1>
 
-          {/* Mobile Menu Button */}
-          <button 
-            onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="md:hidden text-white hover:text-purple-300 transition-colors"
-            aria-label="Toggle menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {showMobileMenu ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex gap-6 items-center flex-1 justify-end">
+          {/* MOBILE: Hamburger Button Only */}
+          {isMobile ? (
+            <button 
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="text-white hover:text-purple-300 transition-colors flex-shrink-0"
+              aria-label="Toggle menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {showMobileMenu ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          ) : (
+            /* DESKTOP: Full Navigation Bar */
+            <nav className="flex gap-4 items-center flex-1 justify-end flex-wrap">
             {userState && (
               <Link 
                 to="/" 
@@ -547,11 +559,12 @@ export default function Layout({ children }) {
             )}
 
           </nav>
+          )}
         </div>
 
-        {/* Mobile Navigation Menu */}
-        {showMobileMenu && (
-          <div className="md:hidden border-t border-white/20 p-4 space-y-3 bg-slate-900/50 backdrop-blur-sm rounded-b-lg">
+        {/* MOBILE: Dropdown Menu */}
+        {isMobile && showMobileMenu && (
+          <div className="border-t border-white/20 p-4 space-y-3 bg-slate-900/50 backdrop-blur-sm rounded-b-lg">
             {userState && (
               <Link 
                 to="/" 
