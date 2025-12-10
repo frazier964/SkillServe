@@ -361,7 +361,8 @@ export default function Layout({ children }) {
           </button>
 
           {/* Desktop Navigation - Hidden on Mobile (hidden on screens < 768px) */}
-          <nav className="hidden md:flex gap-4 items-center flex-1 justify-end flex-wrap">
+          {typeof window !== 'undefined' && window.innerWidth >= 768 && (
+          <nav className="flex gap-4 items-center flex-1 justify-end flex-wrap">
             {userState && (
               <Link 
                 to="/" 
@@ -558,6 +559,7 @@ export default function Layout({ children }) {
             )}
 
           </nav>
+          )}
         </div>
 
         {/* Mobile Dropdown Menu - Show only on mobile when hamburger is clicked */}
