@@ -345,10 +345,10 @@ export default function Layout({ children }) {
             SkillServe
           </h1>
 
-          {/* Hamburger Button - Mobile Only */}
+          {/* Hamburger Button - Mobile Only (visible on screens < 768px) */}
           <button 
             onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="lg:hidden text-white hover:text-purple-300 transition-colors flex-shrink-0"
+            className="md:hidden text-white hover:text-purple-300 transition-colors flex-shrink-0"
             aria-label="Toggle menu"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -360,8 +360,8 @@ export default function Layout({ children }) {
             </svg>
           </button>
 
-          {/* Desktop Navigation - Hidden on Mobile */}
-          <nav className="hidden lg:flex gap-4 items-center flex-1 justify-end flex-wrap">
+          {/* Desktop Navigation - Hidden on Mobile (hidden on screens < 768px) */}
+          <nav className="hidden md:flex gap-4 items-center flex-1 justify-end flex-wrap">
             {userState && (
               <Link 
                 to="/" 
@@ -562,7 +562,7 @@ export default function Layout({ children }) {
 
         {/* Mobile Dropdown Menu - Show only on mobile when hamburger is clicked */}
         {showMobileMenu && (
-          <div className="lg:hidden border-t border-white/20 p-4 space-y-3 bg-slate-900/50 backdrop-blur-sm rounded-b-lg">
+          <div className="md:hidden border-t border-white/20 p-4 space-y-3 bg-slate-900/50 backdrop-blur-sm rounded-b-lg">
             {userState && (
               <Link 
                 to="/" 
