@@ -345,24 +345,23 @@ export default function Layout({ children }) {
             SkillServe
           </h1>
 
-          {/* MOBILE: Hamburger Button Only */}
-          {isMobile ? (
-            <button 
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="text-white hover:text-purple-300 transition-colors flex-shrink-0"
-              aria-label="Toggle menu"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {showMobileMenu ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          ) : (
-            /* DESKTOP: Full Navigation Bar */
-            <nav className="flex gap-4 items-center flex-1 justify-end flex-wrap">
+          {/* Hamburger Button - Mobile Only */}
+          <button 
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            className="lg:hidden text-white hover:text-purple-300 transition-colors flex-shrink-0"
+            aria-label="Toggle menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {showMobileMenu ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+
+          {/* Desktop Navigation - Hidden on Mobile */}
+          <nav className="hidden lg:flex gap-4 items-center flex-1 justify-end flex-wrap">
             {userState && (
               <Link 
                 to="/" 
@@ -559,12 +558,11 @@ export default function Layout({ children }) {
             )}
 
           </nav>
-          )}
         </div>
 
-        {/* MOBILE: Dropdown Menu */}
-        {isMobile && showMobileMenu && (
-          <div className="border-t border-white/20 p-4 space-y-3 bg-slate-900/50 backdrop-blur-sm rounded-b-lg">
+        {/* Mobile Dropdown Menu - Show only on mobile when hamburger is clicked */}
+        {showMobileMenu && (
+          <div className="lg:hidden border-t border-white/20 p-4 space-y-3 bg-slate-900/50 backdrop-blur-sm rounded-b-lg">
             {userState && (
               <Link 
                 to="/" 
