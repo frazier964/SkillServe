@@ -18,7 +18,7 @@ export default function Layout({ children }) {
   const role = userState && userState.role ? String(userState.role).toLowerCase() : null;
   const [trialStatus, setTrialStatus] = useState(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1000 : false);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : true);
 
   // Force check user state on component mount to catch login updates
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function Layout({ children }) {
 
     // Handle window resize
     const handleResize = () => {
-      const mobile = window.innerWidth < 1000;
+      const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       if (!mobile) setShowMobileMenu(false);
     };
@@ -345,23 +345,25 @@ export default function Layout({ children }) {
             SkillServe
           </h1>
 
-          {/* Hamburger Button - Mobile Only (visible on screens < 768px) */}
-          <button 
-            onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="md:hidden text-white hover:text-purple-300 transition-colors flex-shrink-0"
-            aria-label="Toggle menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {showMobileMenu ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
+          {/* Hamburger Button - render only when mobile */}
+          {isMobile && (
+            <button 
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="text-white hover:text-purple-300 transition-colors flex-shrink-0"
+              aria-label="Toggle menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {showMobileMenu ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          )}
 
-          {/* Desktop Navigation - Hidden on Mobile (hidden on screens < 768px) */}
-          {typeof window !== 'undefined' && window.innerWidth >= 768 && (
+          {/* Desktop Navigation - render only when not mobile */}
+          {!isMobile && (
           <nav className="flex gap-4 items-center flex-1 justify-end flex-wrap">
             {userState && (
               <Link 
