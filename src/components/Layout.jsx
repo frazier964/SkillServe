@@ -332,7 +332,7 @@ export default function Layout({ children }) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col overflow-x-hidden">
      
   <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute -inset-10 opacity-50">
@@ -342,9 +342,9 @@ export default function Layout({ children }) {
         </div>
       </div>
 
-  <header className="relative z-20 glass-card m-4 rounded-2xl border border-white/20 bg-linear-to-r from-indigo-600/20 via-purple-600/20 to-pink-600/20">
-        <div className="p-4 flex justify-between items-center gap-4">
-          <h1 className="text-xl sm:text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent">
+  <header className="relative z-20 glass-card m-2 sm:m-4 rounded-xl sm:rounded-2xl border border-white/20 bg-linear-to-r from-indigo-600/20 via-purple-600/20 to-pink-600/20">
+        <div className="p-3 sm:p-4 flex justify-between items-center gap-2 sm:gap-4">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-linear-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent whitespace-nowrap">
             SkillServe
           </h1>
 
@@ -352,10 +352,10 @@ export default function Layout({ children }) {
           {isMobile && (
             <button 
               onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="text-white hover:text-purple-300 transition-colors flex-shrink-0"
+              className="text-white hover:text-purple-300 transition-colors flex-shrink-0 p-2 -mr-2"
               aria-label="Toggle menu"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {showMobileMenu ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -568,8 +568,8 @@ export default function Layout({ children }) {
         </div>
 
         {/* Mobile Dropdown Menu - Show only on mobile when hamburger is clicked */}
-        {showMobileMenu && (
-          <div className="md:hidden border-t border-white/20 p-4 space-y-3 bg-slate-900/50 backdrop-blur-sm rounded-b-lg">
+        {showMobileMenu && isMobile && (
+          <div className="border-t border-white/20 p-3 sm:p-4 space-y-2 bg-slate-900/50 backdrop-blur-sm rounded-b-lg">
             {userState && (
               <Link 
                 to="/" 
@@ -731,7 +731,7 @@ export default function Layout({ children }) {
         </Portal>
       )}
       
-      <main className="relative z-10 flex-1 p-4">
+      <main className="relative z-10 flex-1 p-2 sm:p-4">
         {children}
       </main>
     </div>

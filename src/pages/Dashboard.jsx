@@ -472,13 +472,13 @@ export default function Dashboard() {
   
   return (
     <Layout>
-      <div className="w-full max-w-none mx-0 px-6 py-6 space-y-8 bg-black text-white rounded-3xl">
+      <div className="w-full max-w-none mx-0 px-3 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8 bg-black text-white rounded-2xl sm:rounded-3xl">
 
-        <div className="glass-card p-8 rounded-3xl bg-linear-to-r from-purple-600/20 via-blue-600/20 to-teal-600/20 border border-white/20">
-          <div className="flex items-center justify-between">
+        <div className="glass-card p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-linear-to-r from-purple-600/20 via-blue-600/20 to-teal-600/20 border border-white/20">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               {/* Compute a friendly first name to display: prefer explicit name, then displayName, then email local-part */}
-              <h1 className="text-3xl font-bold text-white mb-2">{
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">{
                 (() => {
                   if (!user) return 'Welcome back';
                   const rawName = user.name || user.displayName || (user.email ? user.email.split('@')[0] : '');
@@ -487,11 +487,11 @@ export default function Dashboard() {
                   return `Welcome back${tidy ? `, ${tidy}` : ''}`;
                 })()
               }</h1>
-              <p className="text-white/70 text-lg">Here's what's happening with your projects today.</p>
+              <p className="text-white/70 text-sm sm:text-base md:text-lg">Here's what's happening with your projects today.</p>
             </div>
-            <div className="text-right mr-4">
-              <div className="text-sm text-white/70">Your followers</div>
-              <div className="text-xl font-bold">{(user && followersMap && followersMap[user.name] ? followersMap[user.name].length : 0)}</div>
+            <div className="text-left sm:text-right">
+              <div className="text-xs sm:text-sm text-white/70">Your followers</div>
+              <div className="text-lg sm:text-xl font-bold">{(user && followersMap && followersMap[user.name] ? followersMap[user.name].length : 0)}</div>
             </div>
             <div className="hidden md:flex items-center gap-4">
               <div className="relative">
@@ -566,7 +566,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <StatCard
             title="Total Jobs"
             value={stats.totalJobs}
@@ -624,17 +624,17 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="glass-card p-6 rounded-2xl bg-white text-black border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-black">Creators to follow</h2>
+        <div className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white text-black border border-gray-200">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-black">Creators to follow</h2>
             <Link to="/creators" className="text-sm text-black/60 hover:text-black transition-colors">See all →</Link>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-2">
+          <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
             {creators.map((c, idx) => {
               const count = (followersMap[c.name] || []).length || 0;
               const following = user && (followersMap[c.name] || []).includes(user.name || user.email);
               return (
-                <div key={c.name || idx} className="min-w-[220px] p-3 bg-white rounded-lg border border-gray-200 hover:scale-105 transition-transform duration-200">
+                <div key={c.name || idx} className="min-w-[180px] sm:min-w-[220px] p-3 bg-white rounded-lg border border-gray-200 hover:scale-105 transition-transform duration-200">
                   <div className="flex items-center gap-3">
                     {c.avatarUrl ? (
                       <img src={c.avatarUrl} alt={c.name} className="w-12 h-12 rounded-full object-cover border-2 border-gray-200" />
