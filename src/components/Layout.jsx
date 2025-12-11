@@ -18,7 +18,7 @@ export default function Layout({ children }) {
   const role = userState && userState.role ? String(userState.role).toLowerCase() : null;
   const [trialStatus, setTrialStatus] = useState(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 1024 : true);
+  const [isMobile, setIsMobile] = useState(true);
 
   // Force check user state on component mount to catch login updates
   useEffect(() => {
@@ -31,15 +31,18 @@ export default function Layout({ children }) {
       // ignore
     }
 
-    // Handle window resize
-    const handleResize = () => {
+    // Set initial mobile state and listen for resize
+    const checkMobile = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-      if (!mobile) setShowMobileMenu(false);
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    // Check immediately on mount
+    checkMobile();
+
+    // Handle window resize
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
   const [messages, setMessages] = useState([]);
   const [showMsgPreview, setShowMsgPreview] = useState(false);
