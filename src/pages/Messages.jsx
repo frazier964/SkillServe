@@ -76,14 +76,14 @@ export default function Messages() {
 
   return (
     <Layout>
-      <div className="p-6 max-w-4xl mx-auto">
-        <div className="mb-6">
+      <div className="p-3 sm:p-6 max-w-4xl mx-auto">
+        <div className="mb-4 sm:mb-6">
           <BackButton className="mb-4" />
-          <h2 className="text-2xl font-bold text-white">Messages</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-white">Messages</h2>
         </div>
 
         <div className="border rounded-lg overflow-hidden bg-slate-800">
-          <div className="p-4 max-h-96 overflow-y-auto space-y-3 text-sm" style={{ color: '#e6eef8' }}>
+          <div className="p-3 sm:p-4 max-h-96 overflow-y-auto space-y-3 text-sm" style={{ color: '#e6eef8' }}>
             {messages.length === 0 && (
               <div className="p-4 rounded bg-white/5 text-white/70">No messages. Use the form below to start a conversation.</div>
             )}
@@ -109,18 +109,18 @@ export default function Messages() {
             <div ref={endRef} />
           </div>
 
-          <div className="p-3 border-t bg-slate-900/80 flex items-center gap-3">
-            <select className="bg-slate-800 text-white px-3 py-2 rounded" value={to} onChange={e => setTo(e.target.value)}>
+          <div className="p-3 border-t bg-slate-900/80 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+            <select className="bg-slate-800 text-white px-3 py-2 rounded min-h-[44px]" value={to} onChange={e => setTo(e.target.value)}>
               {participants.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
             <input
-              className="flex-1 px-3 py-2 rounded bg-slate-800 text-white"
+              className="flex-1 px-3 py-2 rounded bg-slate-800 text-white min-h-[44px]"
               placeholder="Type a message..."
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
             />
-            <button onClick={sendMessage} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Send</button>
+            <button onClick={sendMessage} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded min-h-[44px]">Send</button>
           </div>
         </div>
 

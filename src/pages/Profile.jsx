@@ -123,24 +123,24 @@ export default function Profile() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#6A0DAD] py-12">
-        <div className="max-w-3xl mx-auto py-8 px-4">
-        <div className="glass-card p-6 rounded-2xl border border-white/10 bg-linear-to-r from-slate-800 to-slate-900 text-white">
+      <div className="min-h-screen bg-[#6A0DAD] py-8 sm:py-12">
+        <div className="max-w-3xl mx-auto py-6 sm:py-8 px-3 sm:px-4">
+        <div className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-white/10 bg-linear-to-r from-slate-800 to-slate-900 text-white">
           <div className="mb-6">
             <BackButton className="mb-4" />
-            <h2 className="text-2xl font-bold">Edit Profile</h2>
+            <h2 className="text-xl sm:text-2xl font-bold">Edit Profile</h2>
             <p className="text-sm text-slate-300">Update your profile details and upload a profile picture. Changes are stored locally in this demo.</p>
           </div>
 
-        <form onSubmit={save} className="space-y-4">
+        <form onSubmit={save} className="space-y-3 sm:space-y-4">
           <div>
             <label className="block text-sm mb-1">Full name</label>
-            <input className="w-full p-2 rounded bg-white/5 text-white" value={user.name} onChange={(e) => setUser(prev => ({ ...prev, name: e.target.value }))} />
+            <input className="w-full p-2 rounded bg-white/5 text-white min-h-[44px]" value={user.name} onChange={(e) => setUser(prev => ({ ...prev, name: e.target.value }))} />
           </div>
 
           <div>
             <label className="block text-sm mb-1">Role</label>
-            <select className="w-full p-2 rounded bg-white text-black" value={user.role} onChange={(e) => setUser(prev => ({ ...prev, role: e.target.value }))}>
+            <select className="w-full p-2 rounded bg-white text-black min-h-[44px]" value={user.role} onChange={(e) => setUser(prev => ({ ...prev, role: e.target.value }))}>
               <option value="">Select role</option>
               <option value="client">Client</option>
               <option value="handyman">Handyman</option>
@@ -149,7 +149,7 @@ export default function Profile() {
 
           <div>
             <label className="block text-sm mb-1">Bio</label>
-            <textarea className="w-full p-2 rounded bg-white/5 text-white" rows={3} value={user.bio} onChange={(e) => setUser(prev => ({ ...prev, bio: e.target.value }))}></textarea>
+            <textarea className="w-full p-2 rounded bg-white/5 text-white min-h-[44px]" rows={3} value={user.bio} onChange={(e) => setUser(prev => ({ ...prev, bio: e.target.value }))}></textarea>
           </div>
 
           <div>
@@ -159,7 +159,7 @@ export default function Profile() {
                 {preview ? <img src={preview} alt="avatar" className="w-full h-full object-cover" /> : <div className="text-white/60">No image</div>}
               </div>
               <div className="flex-1">
-                <input type="file" accept="image/*" onChange={handleFile} />
+                <input type="file" accept="image/*" onChange={handleFile} className="max-w-full" />
                 <div className="mt-2 flex gap-2">
                   <button type="button" onClick={removeAvatar} className="px-3 py-1 rounded bg-transparent border border-white/10">Remove</button>
                 </div>
@@ -169,7 +169,7 @@ export default function Profile() {
 
           {msg && <div className="text-sm text-green-300">{msg}</div>}
 
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
             <button 
               type="button" 
               onClick={() => setShowHelpModal(true)} 
@@ -178,8 +178,8 @@ export default function Profile() {
               🆘 Help & Support
             </button>
             <div className="flex gap-2">
-              <button type="button" onClick={handleBack} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleBack(); } }} tabIndex={0} className="px-4 py-2 rounded bg-transparent border border-white/10 cursor-pointer" title="Cancel and return to dashboard" aria-label="Cancel and return to dashboard">Cancel</button>
-              <button type="submit" disabled={saving} className="px-4 py-2 rounded bg-yellow-500 text-slate-900 font-semibold">{saving ? 'Saving...' : 'Save profile'}</button>
+              <button type="button" onClick={handleBack} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleBack(); } }} tabIndex={0} className="px-4 py-2 rounded bg-transparent border border-white/10 cursor-pointer w-full sm:w-auto" title="Cancel and return to dashboard" aria-label="Cancel and return to dashboard">Cancel</button>
+              <button type="submit" disabled={saving} className="px-4 py-2 rounded bg-yellow-500 text-slate-900 font-semibold w-full sm:w-auto">{saving ? 'Saving...' : 'Save profile'}</button>
             </div>
           </div>
         </form>

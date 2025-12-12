@@ -177,18 +177,18 @@ export default function Handymen() {
 
   return (
     <Layout>
-      <div className="p-4">
-        <div className="mb-4 flex items-center gap-3">
+      <div className="p-3 sm:p-4">
+        <div className="mb-4 flex items-center gap-2 sm:gap-3">
             <BackButton />
-            <h2 className="text-2xl font-semibold mb-0 text-black">Handymen</h2>
+            <h2 className="text-lg sm:text-2xl font-semibold mb-0 text-black">Handymen</h2>
           </div>
   <p className="text-sm text-amber-400 mb-4">Search handymen by skills (comma separated). Clients can view and compare handymen here.</p>
 
-        <div className="flex gap-3 items-center mb-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-center mb-4">
         <input
           value={querySkills}
           onChange={(e) => setQuerySkills(e.target.value)}
-          className="input-field bg-white/5 text-white placeholder-white/60 border-white/20"
+          className="input-field bg-white/5 text-white placeholder-white/60 border-white/20 min-h-[44px]"
           placeholder="e.g. electrical, plumbing"
         />
         <div className="flex items-center gap-2">
@@ -197,7 +197,7 @@ export default function Handymen() {
             id="sortBy"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="input-field bg-white text-slate-900 border-white/20 px-3 py-2 rounded-md"
+            className="input-field bg-white text-slate-900 border-white/20 px-3 py-2 rounded-md min-h-[44px]"
             style={{ minWidth: 180 }}
           >
             <option value="compatibility" >Compatibility — best match first </option>
@@ -207,14 +207,14 @@ export default function Handymen() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div>
           {sorted.map((h) => (
-            <div key={h.id} className="glass-card p-4 mb-3">
+            <div key={h.id} className="glass-card p-3 sm:p-4 mb-3">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-semibold text-lg text-black">{h.name.split(' ').map(n => n[0]).slice(0,2).join('')}</div>
                 <div className="flex-1">
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                     <div>
                           <div className="font-semibold text-black">{h.name}</div>
                           <div className="text-sm text-black/60">{h.location} • {h.skills.join(', ')}</div>
@@ -224,11 +224,11 @@ export default function Handymen() {
                           <div className="text-sm text-black/60">{h.reviews} reviews</div>
                     </div>
                   </div>
-                  <div className="mt-3 flex items-center justify-between">
+                  <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                         <div className="text-sm text-black/70">Hourly: ${h.hourly}</div>
                     <div>
                           <div className="text-sm text-black/70">Compatibility: <strong className="text-black">{h.compatibility}%</strong></div>
-                      <button onClick={() => setSelected(h)} className="mt-2 btn-secondary">View details</button>
+                      <button onClick={() => setSelected(h)} className="mt-2 btn-secondary w-full sm:w-auto">View details</button>
                     </div>
                   </div>
                 </div>
