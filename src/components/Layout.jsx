@@ -20,19 +20,17 @@ export default function Layout({ children }) {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const getIsMobile = () => {
     try {
-      if (typeof navigator !== 'undefined') {
-        const ua = navigator.userAgent || '';
-        if (/Mobi|Android|iPhone|iPad|iPod/i.test(ua)) return true;
-      }
-      if (typeof window !== 'undefined') {
-        return window.innerWidth < 1100; // slightly above 1024 to catch tablet/desktop-site requests
-      }
+      const ua = typeof navigator !== 'undefined' ? (navigator.userAgent || '') : '';
+      const uaMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+      const coarse = typeof window !== 'undefined' ? window.matchMedia('(pointer: coarse)').matches : false;
+      const width = typeof window !== 'undefined' ? window.innerWidth : 0;
+      // Force mobile when any signal indicates touch/mobile, or width below 1200px
+      return uaMobile || coarse || width < 1200;
     } catch (e) {
-      // ignore
+      return true;
     }
-    return true;
   };
-  const [isMobile, setIsMobile] = useState(getIsMobile());
+  const [isMobile, setIsMobile] = useState(true); // default to mobile until measured
 
   // Force check user state on component mount to catch login updates
   useEffect(() => {
@@ -380,7 +378,7 @@ export default function Layout({ children }) {
 
           {/* Desktop Navigation - render only when not mobile */}
           {!isMobile && (
-          <nav className="hidden lg:flex gap-4 items-center flex-1 justify-end flex-wrap">
+          <nav className="hidden lg:flex gap-4 items-center flex-1 justify-end flex-wrap" style={{ display: isMobile ? 'none' : undefined }}>
             {userState && (
               <Link 
                 to="/" 
