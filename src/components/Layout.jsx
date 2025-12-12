@@ -359,26 +359,11 @@ export default function Layout({ children }) {
             SkillServe
           </h1>
 
-          {/* Hamburger Button - render only when mobile */}
-          {isMobile && (
-            <button 
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="text-white hover:text-purple-300 transition-colors flex-shrink-0 p-2 -mr-2"
-              aria-label="Toggle menu"
-            >
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {showMobileMenu ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          )}
-
-          {/* Desktop Navigation - render only when not mobile */}
-          {!isMobile && (
-          <nav className="hidden lg:flex gap-4 items-center flex-1 justify-end flex-wrap" style={{ display: isMobile ? 'none' : undefined }}>
+          {/* Mobile: show ONLY the SkillServe text; hide all other header elements */}
+          {isMobile ? null : (
+            <>
+            {/* Desktop Navigation - render only when not mobile */}
+            <nav className="hidden lg:flex gap-4 items-center flex-1 justify-end flex-wrap" style={{ display: isMobile ? 'none' : undefined }}>
             {userState && (
               <Link 
                 to="/" 
@@ -574,103 +559,11 @@ export default function Layout({ children }) {
               </div>
             )}
 
-          </nav>
+            </nav>
+            </>
           )}
         </div>
-
-        {/* Mobile Dropdown Menu - Show only on mobile when hamburger is clicked */}
-        {showMobileMenu && isMobile && (
-          <div className="border-t border-white/20 p-3 sm:p-4 space-y-2 bg-slate-900/50 backdrop-blur-sm rounded-b-lg">
-            {userState && (
-              <Link 
-                to="/" 
-                onClick={() => setShowMobileMenu(false)}
-                className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
-              >
-                Dashboard
-              </Link>
-            )}
-
-            {userState && role === 'client' && (
-              <>
-                <Link
-                  to="/handymen"
-                  onClick={() => setShowMobileMenu(false)}
-                  className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
-                >
-                  Handymen
-                </Link>
-                <Link 
-                  to="/postjob"
-                  onClick={() => setShowMobileMenu(false)}
-                  className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
-                >
-                  Post Job
-                </Link>
-              </>
-            )}
-
-            <Link
-              to="/messages"
-              onClick={() => setShowMobileMenu(false)}
-              className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
-            >
-              Messages {messages && messages.length > 0 && `(${messages.length})`}
-            </Link>
-
-            <Link
-              to="/premium"
-              onClick={() => setShowMobileMenu(false)}
-              className="block text-yellow-300 hover:text-yellow-200 transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
-            >
-              {userState?.premium ? 'Premium ✓' : 'Go Premium'}
-            </Link>
-
-            <Link
-              to="/profile"
-              onClick={() => setShowMobileMenu(false)}
-              className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
-            >
-              Profile
-            </Link>
-
-            <Link
-              to="/settings"
-              onClick={() => setShowMobileMenu(false)}
-              className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
-            >
-              Settings
-            </Link>
-
-            {userState && (
-              <button 
-                onClick={() => setShowSignoutConfirm(true)}
-                className="w-full bg-linear-to-r from-red-500 to-pink-500 text-white font-medium py-2 px-3 rounded-lg hover:scale-105 transition-all duration-300"
-              >
-                Logout
-              </button>
-            )}
-
-            {!userState && (
-              <>
-                <Link 
-                  to="/login"
-                  onClick={() => setShowMobileMenu(false)}
-                  className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
-                >
-                  Login
-                </Link>
-                <Link 
-                  to="/signup"
-                  onClick={() => setShowMobileMenu(false)}
-                  className="block text-white/80 hover:text-white transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-white/10"
-                >
-                  Signup
-                </Link>
-              </>
-            )}
-          </div>
-        )}
+        {/* Mobile Dropdown: fully disabled to show only SkillServe on mobile */}
       </header>
 
       {/* Trial Warning Banner */}
