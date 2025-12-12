@@ -18,7 +18,21 @@ export default function Layout({ children }) {
   const role = userState && userState.role ? String(userState.role).toLowerCase() : null;
   const [trialStatus, setTrialStatus] = useState(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [isMobile, setIsMobile] = useState(true);
+  const getIsMobile = () => {
+    try {
+      if (typeof navigator !== 'undefined') {
+        const ua = navigator.userAgent || '';
+        if (/Mobi|Android|iPhone|iPad|iPod/i.test(ua)) return true;
+      }
+      if (typeof window !== 'undefined') {
+        return window.innerWidth < 1100; // slightly above 1024 to catch tablet/desktop-site requests
+      }
+    } catch (e) {
+      // ignore
+    }
+    return true;
+  };
+  const [isMobile, setIsMobile] = useState(getIsMobile());
 
   // Force check user state on component mount to catch login updates
   useEffect(() => {
@@ -33,8 +47,7 @@ export default function Layout({ children }) {
 
     // Set initial mobile state and listen for resize
     const checkMobile = () => {
-      const mobile = window.innerWidth < 1024;
-      setIsMobile(mobile);
+      setIsMobile(getIsMobile());
     };
 
     // Check immediately on mount
@@ -367,7 +380,7 @@ export default function Layout({ children }) {
 
           {/* Desktop Navigation - render only when not mobile */}
           {!isMobile && (
-          <nav className="flex gap-4 items-center flex-1 justify-end flex-wrap">
+          <nav className="hidden lg:flex gap-4 items-center flex-1 justify-end flex-wrap">
             {userState && (
               <Link 
                 to="/" 
