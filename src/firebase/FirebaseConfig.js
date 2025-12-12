@@ -10,13 +10,13 @@ import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBUlTm7XqtP8AegObmD7hsgZQMmWHMh31o",
-  authDomain: "skillserve-c4c53.firebaseapp.com",
-  projectId: "skillserve-c4c53",
-  storageBucket: "skillserve-c4c53.firebasestorage.app",
-  messagingSenderId: "835909898750",
-  appId: "1:835909898750:web:d50fcd8264121b2af230af",
-  measurementId: "G-BKL8SEDPV0"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
