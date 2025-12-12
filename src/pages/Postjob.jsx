@@ -66,36 +66,36 @@ export default function PostJob() {
 
   return (
     <Layout>
-      <div className="w-full max-w-2xl mx-auto p-6">
+      <div className="w-full max-w-2xl mx-auto p-3 sm:p-6">
         <div className="mb-6">
           <BackButton />
         </div>
         
-        <div className="glass-card p-8 rounded-3xl bg-linear-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 border border-white/20 mb-8">
+        <div className="glass-card p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-linear-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 border border-white/20 mb-6 sm:mb-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-4">
+            <h1 className="text-2xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">
               Post a New Job 📝
             </h1>
-            <p className="text-white/70 text-lg">
+            <p className="text-white/70 text-sm sm:text-lg">
               Create a job posting and connect with talented professionals
             </p>
           </div>
         </div>
 
        
-        <div className="glass-card p-8 rounded-2xl bg-linear-to-br from-indigo-600/10 to-purple-600/10 border border-white/20">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="glass-card p-4 sm:p-8 rounded-xl sm:rounded-2xl bg-linear-to-br from-indigo-600/10 to-purple-600/10 border border-white/20">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             
             <div>
-              <label className="block text-black font-semibold mb-2">
+              <label className="block text-black font-semibold mb-2 text-sm sm:text-base">
                 Job Title *
               </label>
               <input 
                 type="text"
-                placeholder="e.g., Website Development, Logo Design, Content Writing"
+                placeholder="e.g., Website Development, Logo Design"
                 value={title} 
                 onChange={(e) => setTitle(e.target.value)} 
-                className="input-field w-full p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-black placeholder-black/50 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 transition-all duration-300" 
+                className="input-field w-full p-3 sm:p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-black placeholder-black/50 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/50 transition-all duration-300 min-h-[44px]" 
                 required 
               />
             </div>

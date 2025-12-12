@@ -85,27 +85,27 @@ export default function Settings() {
 
   return (
     <Layout>
-      <div className="w-full max-w-4xl mx-auto p-6 space-y-6 bg-black/80 text-white rounded-3xl">
-        <div className="mb-6">
+      <div className="w-full max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6 bg-black/80 text-white rounded-2xl sm:rounded-3xl">
+        <div className="mb-4 sm:mb-6">
           <BackButton className="mb-4" />
-          <h1 className="text-2xl font-bold">Account Settings</h1>
+          <h1 className="text-xl sm:text-2xl font-bold">Account Settings</h1>
         </div>
 
-        <section className="p-6 rounded-2xl bg-white text-black border border-gray-200 shadow-sm">
-          <h2 className="text-lg font-semibold mb-3 text-black">Profile</h2>
+        <section className="p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white text-black border border-gray-200 shadow-sm">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 text-black">Profile</h2>
           <div className="grid grid-cols-1 gap-4">
             <label className="flex flex-col">
               <span className="text-sm text-black mb-1">Full Name</span>
               <input value={user.name || ""} onChange={e => setUser(u => ({ ...u, name: e.target.value }))} className="p-3 rounded-md bg-white border border-gray-300 text-black" />
             </label>
           </div>
-          <div className="mt-4 flex gap-3">
-            <button onClick={saveProfile} className="px-4 py-2 bg-blue-600 text-white rounded-lg">Save profile</button>
-            <button onClick={() => { setUser({ name: "", email: "" }); alert('Reset to blank profile'); }} className="px-4 py-2 bg-white/5 text-white rounded-lg">Reset</button>
+          <div className="mt-4 flex flex-col sm:flex-row gap-3">
+            <button onClick={saveProfile} className="px-4 py-3 sm:py-2 bg-blue-600 text-white rounded-lg min-h-[44px]">Save profile</button>
+            <button onClick={() => { setUser({ name: "", email: "" }); alert('Reset to blank profile'); }} className="px-4 py-3 sm:py-2 bg-white/5 text-white rounded-lg min-h-[44px]">Reset</button>
           </div>
         </section>
 
-        <section className="glass-card p-6 rounded-2xl bg-linear-to-br from-green-600/10 to-teal-600/10 border border-white/10">
+        <section className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-linear-to-br from-green-600/10 to-teal-600/10 border border-white/10">
           <h2 className="text-lg font-semibold mb-3">Preferences</h2>
           <div className="flex items-center justify-between">
             <div>
@@ -124,9 +124,9 @@ export default function Settings() {
           </div>
         </section>
 
-        <section className="glass-card p-6 rounded-2xl bg-linear-to-br from-purple-600/10 to-pink-600/10 border border-white/10">
-          <h2 className="text-lg font-semibold mb-3">Security</h2>
-          <form onSubmit={changePassword} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <section className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-linear-to-br from-purple-600/10 to-pink-600/10 border border-white/10">
+          <h2 className="text-base sm:text-lg font-semibold mb-3">Security</h2>
+          <form onSubmit={changePassword} className="grid grid-cols-1 gap-4">
             <div className="md:col-span-1">
               <label className="flex flex-col">
                 <span className="text-sm text-white/70 mb-1">New password</span>

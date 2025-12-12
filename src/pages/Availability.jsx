@@ -91,16 +91,16 @@ function Availability() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-linear-to-r from-blue-50 via-indigo-50 to-purple-50 p-6">
+      <div className="min-h-screen bg-linear-to-r from-blue-50 via-indigo-50 to-purple-50 p-3 sm:p-6">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-4 sm:p-8">
             <div className="mb-6">
               <BackButton className="mb-4" />
             </div>
             {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">Availability Settings</h1>
-              <p className="text-gray-600">Set your working hours and availability for clients to book your services.</p>
+            <div className="mb-6 sm:mb-8">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Availability Settings</h1>
+              <p className="text-sm sm:text-base text-gray-600">Set your working hours and availability for clients to book your services.</p>
             </div>
 
             {/* Current Status */}
@@ -114,16 +114,16 @@ function Availability() {
             </div>
 
             {/* Quick Actions */}
-            <div className="mb-8 flex gap-4">
+            <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={handleQuickSetAll}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="px-4 py-3 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base min-h-[44px]"
               >
                 Set All Days (9 AM - 5 PM)
               </button>
               <button
                 onClick={handleClearAll}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                className="px-4 py-3 sm:py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base min-h-[44px]"
               >
                 Clear All
               </button>
@@ -150,46 +150,46 @@ function Availability() {
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Weekly Schedule</h2>
               
               {days.map((day) => (
-                <div key={day.key} className="bg-white/50 rounded-xl p-4 border border-gray-200">
-                  <div className="flex items-center justify-between">
+                <div key={day.key} className="bg-white/50 rounded-xl p-3 sm:p-4 border border-gray-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex items-center gap-4">
-                      <label className="flex items-center gap-2 cursor-pointer">
+                      <label className="flex items-center gap-2 cursor-pointer min-h-[44px]">
                         <input
                           type="checkbox"
                           checked={availability[day.key].enabled}
                           onChange={() => handleDayToggle(day.key)}
-                          className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                          className="w-5 h-5 sm:w-4 sm:h-4 text-blue-600 rounded focus:ring-blue-500"
                         />
-                        <span className="font-medium text-gray-700 w-24">{day.label}</span>
+                        <span className="font-medium text-gray-700 w-24 text-base sm:text-sm">{day.label}</span>
                       </label>
                     </div>
 
                     {availability[day.key].enabled && (
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 ml-0 sm:ml-0">
                         <div className="flex items-center gap-2">
-                          <label className="text-sm text-gray-600">From:</label>
+                          <label className="text-sm text-gray-600 w-12">From:</label>
                           <input
                             type="time"
                             value={availability[day.key].startTime}
                             onChange={(e) => handleTimeChange(day.key, 'startTime', e.target.value)}
-                            className="px-3 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="px-3 py-2 sm:py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0"
                           />
                         </div>
                         
                         <div className="flex items-center gap-2">
-                          <label className="text-sm text-gray-600">To:</label>
+                          <label className="text-sm text-gray-600 w-12">To:</label>
                           <input
                             type="time"
                             value={availability[day.key].endTime}
                             onChange={(e) => handleTimeChange(day.key, 'endTime', e.target.value)}
-                            className="px-3 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="px-3 py-2 sm:py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px] sm:min-h-0"
                           />
                         </div>
                       </div>
                     )}
 
                     {!availability[day.key].enabled && (
-                      <span className="text-gray-400 italic">Unavailable</span>
+                      <span className="text-gray-400 italic text-sm">Unavailable</span>
                     )}
                   </div>
                 </div>

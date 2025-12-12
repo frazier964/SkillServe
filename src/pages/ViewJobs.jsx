@@ -101,53 +101,53 @@ export default function ViewJobs() {
 
   return (
     <Layout>
-      <div className="w-full max-w-6xl mx-auto p-6">
+      <div className="w-full max-w-6xl mx-auto p-3 sm:p-6">
         <div className="mb-6">
           <BackButton />
         </div>
 
         {/* Header */}
-        <div className="glass-card p-8 rounded-3xl bg-linear-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 border border-white/20 mb-8">
+        <div className="glass-card p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-linear-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 border border-white/20 mb-6 sm:mb-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-white mb-2">Available Jobs 💼</h1>
-            <p className="text-white/70 text-lg">Browse and apply for jobs in your field</p>
+            <h1 className="text-2xl sm:text-4xl font-bold text-white mb-2">Available Jobs 💼</h1>
+            <p className="text-white/70 text-sm sm:text-lg">Browse and apply for jobs in your field</p>
           </div>
         </div>
 
         {/* Job Categories Filter */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-white mb-4">Browse by Category</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Browse by Category</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
             <button
               onClick={() => setSelectedCategory('all')}
-              className={`p-4 rounded-xl border transition-all duration-300 text-center font-semibold ${
+              className={`p-3 sm:p-4 rounded-xl border transition-all duration-300 text-center font-semibold min-h-[80px] sm:min-h-0 ${
                 selectedCategory === 'all'
                   ? 'bg-blue-600 border-blue-400 text-white'
                   : 'bg-white/5 border-white/20 text-white hover:bg-white/10'
               }`}
             >
-              <div className="text-2xl mb-2">🎯</div>
-              All Jobs
+              <div className="text-xl sm:text-2xl mb-1 sm:mb-2">🎯</div>
+              <span className="text-xs sm:text-base">All Jobs</span>
             </button>
             {JOB_CATEGORIES.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`p-4 rounded-xl border transition-all duration-300 text-center ${
+                className={`p-3 sm:p-4 rounded-xl border transition-all duration-300 text-center min-h-[80px] sm:min-h-0 ${
                   selectedCategory === category.id
                     ? 'bg-blue-600 border-blue-400 text-white'
                     : 'bg-white/5 border-white/20 text-white hover:bg-white/10'
                 }`}
               >
-                <div className="text-2xl mb-2">{category.icon}</div>
-                <div className="font-semibold text-sm">{category.name}</div>
+                <div className="text-xl sm:text-2xl mb-1 sm:mb-2">{category.icon}</div>
+                <div className="font-semibold text-xs sm:text-sm">{category.name}</div>
               </button>
             ))}
           </div>
         </div>
 
         {/* Jobs List */}
-        <div className="glass-card p-6 rounded-2xl bg-white/95 backdrop-blur-sm border border-gray-200">
+        <div className="glass-card p-3 sm:p-6 rounded-xl sm:rounded-2xl bg-white/95 backdrop-blur-sm border border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             {selectedCategory === 'all' ? 'All Posted Jobs' : `Jobs in ${JOB_CATEGORIES.find(c => c.id === selectedCategory)?.name}`}
           </h2>

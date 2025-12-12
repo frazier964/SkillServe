@@ -104,16 +104,16 @@ export default function Help() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#6A0DAD] py-12">
-        <div className="max-w-2xl mx-auto p-6">
-          <div className="glass-card p-8 rounded-2xl border border-white/10 bg-linear-to-r from-slate-800 to-slate-900 text-white">
+      <div className="min-h-screen bg-[#6A0DAD] py-6 sm:py-12">
+        <div className="max-w-2xl mx-auto p-3 sm:p-6">
+          <div className="glass-card p-4 sm:p-8 rounded-xl sm:rounded-2xl border border-white/10 bg-linear-to-r from-slate-800 to-slate-900 text-white">
             <div className="mb-6">
               <BackButton className="mb-4" />
             </div>
-            <div className="mb-6 text-center">
-              <div className="text-4xl mb-4">🆘</div>
-              <h1 className="text-3xl font-bold mb-2">Help & Support</h1>
-              <p className="text-slate-300">
+            <div className="mb-4 sm:mb-6 text-center">
+              <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🆘</div>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-2">Help & Support</h1>
+              <p className="text-sm sm:text-base text-slate-300">
                 Need assistance? Report an issue or ask for help below.
               </p>
             </div>

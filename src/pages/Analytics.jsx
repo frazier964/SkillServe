@@ -14,14 +14,14 @@ export default function Analytics() {
 
   return (
     <Layout>
-      <div className="w-full max-w-none mx-0 px-6 py-6 space-y-6">
+      <div className="w-full max-w-none mx-0 px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <div className="mb-6">
           <BackButton />
         </div>
         <PremiumGuard feature="analytics dashboard">
-          <div className="glass-card p-6 rounded-2xl bg-white text-black border border-gray-200">
+          <div className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white text-black border border-gray-200">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">Analytics</h1>
+            <h1 className="text-xl sm:text-2xl font-bold">Analytics</h1>
             <Link to="/" className="text-sm text-slate-600 hover:text-black">← Back to dashboard</Link>
           </div>
 

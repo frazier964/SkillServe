@@ -96,52 +96,52 @@ export default function Cashout() {
 
   return (
     <Layout>
-      <div className="max-w-3xl mx-auto p-6">
-        <div className="glass-card p-6 rounded-2xl bg-linear-to-r from-slate-800 to-slate-900 text-white shadow-xl">
-          <div className="mb-6">
+      <div className="max-w-3xl mx-auto p-3 sm:p-6">
+        <div className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-linear-to-r from-slate-800 to-slate-900 text-white shadow-xl">
+          <div className="mb-4 sm:mb-6">
             <BackButton />
           </div>
-          <h2 className="text-2xl font-bold">Cash out your earnings</h2>
-          <p className="text-slate-300 mt-1">Available balance: <strong className="text-white">${balance.toFixed(2)}</strong></p>
+          <h2 className="text-xl sm:text-2xl font-bold">Cash out your earnings</h2>
+          <p className="text-sm sm:text-base text-slate-300 mt-1">Available balance: <strong className="text-white">${balance.toFixed(2)}</strong></p>
 
-          <form onSubmit={onSubmit} className="mt-6 grid grid-cols-1 gap-4">
+          <form onSubmit={onSubmit} className="mt-4 sm:mt-6 grid grid-cols-1 gap-4">
             <label className="text-sm text-slate-300">Amount to withdraw</label>
-            <input value={amount} onChange={(e) => setAmount(e.target.value)} className="p-2 rounded bg-white/5 text-white" />
+            <input value={amount} onChange={(e) => setAmount(e.target.value)} className="p-3 rounded bg-white/5 text-white min-h-[44px]" />
 
             <label className="text-sm text-slate-300">Withdrawal method</label>
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex gap-2 sm:gap-3 flex-wrap">
               {['mpesa','paypal','crypto'].map(m => (
-                <button key={m} type="button" onClick={() => setMethod(m)} className={`px-3 py-2 rounded ${method===m? 'bg-yellow-500 text-slate-900' : 'bg-white/5 text-white'}`}>{m.toUpperCase()}</button>
+                <button key={m} type="button" onClick={() => setMethod(m)} className={`px-4 py-3 sm:py-2 rounded min-h-[44px] ${method===m? 'bg-yellow-500 text-slate-900' : 'bg-white/5 text-white'}`}>{m.toUpperCase()}</button>
               ))}
             </div>
 
             {method === 'mpesa' && (
               <div>
-                <label className="text-sm text-slate-300">Mpesa Phone</label>
-                <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="07XXXXXXXX" className="p-2 rounded bg-white/5 text-white w-full" />
+                <label className="text-sm text-slate-300 block mb-2">Mpesa Phone</label>
+                <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="07XXXXXXXX" className="p-3 rounded bg-white/5 text-white w-full min-h-[44px]" />
               </div>
             )}
 
             {method === 'paypal' && (
               <div>
-                <label className="text-sm text-slate-300">PayPal email</label>
-                <input value={paypalEmail} onChange={(e) => setPaypalEmail(e.target.value)} placeholder="you@paypal.com" className="p-2 rounded bg-white/5 text-white w-full" />
+                <label className="text-sm text-slate-300 block mb-2">PayPal email</label>
+                <input value={paypalEmail} onChange={(e) => setPaypalEmail(e.target.value)} placeholder="you@paypal.com" className="p-3 rounded bg-white/5 text-white w-full min-h-[44px]" />
               </div>
             )}
 
             {method === 'crypto' && (
               <div>
-                <label className="text-sm text-slate-300">Wallet address</label>
-                <input value={cryptoAddr} onChange={(e) => setCryptoAddr(e.target.value)} placeholder="Your BTC/ETH/SOL address" className="p-2 rounded bg-white/5 text-white w-full" />
+                <label className="text-sm text-slate-300 block mb-2">Wallet address</label>
+                <input value={cryptoAddr} onChange={(e) => setCryptoAddr(e.target.value)} placeholder="Your BTC/ETH/SOL address" className="p-3 rounded bg-white/5 text-white w-full min-h-[44px]" />
                 <div className="text-xs text-slate-400 mt-2">After submitting, our team will process the crypto transfer (mock).</div>
               </div>
             )}
 
             {status && <div className="text-sm text-yellow-300">{status}</div>}
 
-            <div className="flex gap-3 justify-end">
-              <button type="button" onClick={() => navigate('/dashboard')} className="px-4 py-2 rounded bg-transparent border border-white/20">Cancel</button>
-              <button type="submit" disabled={processing} className="px-4 py-2 rounded bg-yellow-500 text-slate-900 font-semibold">{processing ? 'Processing...' : 'Request Payout'}</button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-end">
+              <button type="button" onClick={() => navigate('/dashboard')} className="px-4 py-3 sm:py-2 rounded bg-transparent border border-white/20 min-h-[44px]">Cancel</button>
+              <button type="submit" disabled={processing} className="px-4 py-3 sm:py-2 rounded bg-yellow-500 text-slate-900 font-semibold min-h-[44px]">{processing ? 'Processing...' : 'Request Payout'}</button>
             </div>
           </form>
         </div>
