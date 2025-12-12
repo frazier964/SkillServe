@@ -472,10 +472,10 @@ export default function Dashboard() {
   
   return (
     <Layout>
-      <div className="w-full max-w-none mx-0 px-3 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8 bg-black text-white rounded-2xl sm:rounded-3xl">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 md:space-y-8">
 
-        <div className="glass-card p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-linear-to-r from-purple-600/20 via-blue-600/20 to-teal-600/20 border border-white/20">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="glass-card p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-teal-600/20 border border-white/20">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div>
               {/* Compute a friendly first name to display: prefer explicit name, then displayName, then email local-part */}
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2">{
@@ -566,7 +566,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           <StatCard
             title="Total Jobs"
             value={stats.totalJobs}
@@ -624,31 +624,31 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white text-black border border-gray-200">
+        <div className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-lg sm:text-xl font-bold text-black">Creators to follow</h2>
-            <Link to="/creators" className="text-sm text-black/60 hover:text-black transition-colors">See all →</Link>
+            <h2 className="text-lg sm:text-xl font-bold text-white">Creators to follow</h2>
+            <Link to="/creators" className="text-sm text-white/60 hover:text-white transition-colors">See all →</Link>
           </div>
-          <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 scrollbar-hide">
             {creators.map((c, idx) => {
               const count = (followersMap[c.name] || []).length || 0;
               const following = user && (followersMap[c.name] || []).includes(user.name || user.email);
               return (
-                <div key={c.name || idx} className="min-w-[180px] sm:min-w-[220px] p-3 bg-white rounded-lg border border-gray-200 hover:scale-105 transition-transform duration-200">
-                  <div className="flex items-center gap-3">
+                <div key={c.name || idx} className="min-w-[160px] sm:min-w-[200px] flex-shrink-0 p-3 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:scale-105 transition-transform duration-200">
+                  <div className="flex items-center gap-2">
                     {c.avatarUrl ? (
-                      <img src={c.avatarUrl} alt={c.name} className="w-12 h-12 rounded-full object-cover border-2 border-gray-200" />
+                      <img src={c.avatarUrl} alt={c.name} className="w-10 h-10 rounded-full object-cover border-2 border-white/20" />
                     ) : (
-                      <div className="w-12 h-12 rounded-full bg-linear-to-r from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold">{c.avatar}</div>
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">{c.avatar}</div>
                     )}
-                    <div className="flex-1">
-                      <div className="text-black font-semibold">{c.name}</div>
-                      <div className="text-slate-600 text-sm">{c.bio}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-white font-semibold text-sm truncate">{c.name}</div>
+                      <div className="text-white/60 text-xs truncate">{c.bio}</div>
                     </div>
                   </div>
-                  <div className="mt-3 flex items-center justify-between">
-                    <div className="text-xs text-slate-600">{count} followers</div>
-                    <button onClick={() => toggleFollow(c.name)} className={`px-3 py-1 rounded text-sm ${following ? 'bg-slate-600 text-white' : 'bg-yellow-500 text-slate-900'}`}>
+                  <div className="mt-2 flex items-center justify-between">
+                    <div className="text-xs text-white/60">{count} followers</div>
+                    <button onClick={() => toggleFollow(c.name)} className={`px-2 py-1 rounded text-xs font-medium ${following ? 'bg-white/20 text-white' : 'bg-yellow-500 text-black'}`}>
                       {following ? 'Following' : 'Follow'}
                     </button>
                   </div>
@@ -658,10 +658,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           <div className="lg:col-span-2">
-            <div className="glass-card p-6 rounded-2xl bg-linear-to-br from-indigo-600/10 to-purple-600/10 border border-white/20">
-              <div className="flex items-center justify-between mb-6">
+            <div className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-indigo-600/10 to-purple-600/10 border border-white/20">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
                 <h2 className="text-2xl font-bold text-white">
                   {user && String(user.role).toLowerCase() === 'handyman' ? 'Available Jobs' : 'Recent Jobs'}
                 </h2>
@@ -683,21 +683,21 @@ export default function Dashboard() {
                     <p className="text-white/50 text-sm">Check back soon for new job opportunities!</p>
                   </div>
                 ) : (
-                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
                     {jobs.slice(0, 5).map((job, i) => (
-                      <div key={i} className="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-bold text-black text-lg mb-1">{job.title}</h3>
-                            <p className="text-black text-sm mb-2">{job.description}</p>
-                            <div className="flex items-center gap-4 text-sm">
+                      <div key={i} className="bg-white/5 backdrop-blur-sm p-3 sm:p-4 rounded-lg sm:rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-2 sm:gap-0">
+                          <div className="flex-1 w-full sm:w-auto">
+                            <h3 className="font-bold text-white text-base sm:text-lg mb-1">{job.title}</h3>
+                            <p className="text-white/70 text-xs sm:text-sm mb-2 line-clamp-2">{job.description}</p>
+                            <div className="flex items-center gap-3 text-xs sm:text-sm">
                               <span className="text-green-400 font-semibold">${job.price}</span>
-                              <span className="text-black">by {job.postedBy}</span>
+                              <span className="text-white/80">by {job.postedBy}</span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${job.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>{job.status || 'Active'}</span>
-                            <button onClick={() => alert('Apply feature coming soon! Contact the client through Messages.')} className="ml-2 px-3 py-1 rounded-md bg-green-600/80 text-white text-sm hover:bg-green-600">Apply</button>
+                          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${job.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>{job.status || 'Active'}</span>
+                            <button onClick={() => alert('Apply feature coming soon! Contact the client through Messages.')} className="px-3 py-1 rounded-md bg-green-600/80 text-white text-xs sm:text-sm hover:bg-green-600 whitespace-nowrap">Apply</button>
                           </div>
                         </div>
                       </div>
@@ -721,25 +721,25 @@ export default function Dashboard() {
                     </Link>
                   </div>
                 ) : (
-                  <div className="space-y-4 max-h-96 overflow-y-auto" data-section="recent-jobs">
+                  <div className="space-y-3 max-h-96 overflow-y-auto" data-section="recent-jobs">
                     {displayedJobs.slice(0, 5).map((job, i) => (
-                      <div key={i} className="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-bold text-black text-lg mb-1">{job.title}</h3>
-                            <p className="text-black text-sm mb-2">{job.description}</p>
-                            <div className="flex items-center gap-4 text-sm">
+                      <div key={i} className="bg-white/5 backdrop-blur-sm p-3 sm:p-4 rounded-lg sm:rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-2 sm:gap-0">
+                          <div className="flex-1 w-full sm:w-auto">
+                            <h3 className="font-bold text-white text-base sm:text-lg mb-1">{job.title}</h3>
+                            <p className="text-white/70 text-xs sm:text-sm mb-2 line-clamp-2">{job.description}</p>
+                            <div className="flex items-center gap-3 text-xs sm:text-sm flex-wrap">
                               <span className="text-green-400 font-semibold">${job.price}</span>
-                              <span className="text-black">by {job.postedBy}
+                              <span className="text-white/80">by {job.postedBy}
                                 {((followersMap[job.postedBy] || []).length || 0) >= 3 && (
                                   <span className="ml-2 inline-flex items-center px-2 py-1 text-xs font-semibold bg-yellow-500/20 text-yellow-300 rounded">Promoted</span>
                                 )}
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${job.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>{job.status || 'Active'}</span>
-                            <button onClick={() => handleDeleteJob(i)} className="ml-2 px-3 py-1 rounded-md bg-red-600/80 text-white text-sm hover:bg-red-600">Remove</button>
+                          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${job.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>{job.status || 'Active'}</span>
+                            <button onClick={() => handleDeleteJob(i)} className="px-3 py-1 rounded-md bg-red-600/80 text-white text-xs sm:text-sm hover:bg-red-600 whitespace-nowrap">Remove</button>
                           </div>
                         </div>
                       </div>
@@ -750,15 +750,15 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="glass-card p-6 rounded-2xl bg-linear-to-br from-green-600/10 to-teal-600/10 border border-white/20">
-            <h2 className="text-2xl font-bold text-white mb-6">Recent Activity</h2>
-            <div className="space-y-4">
+          <div className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-green-600/10 to-teal-600/10 border border-white/20">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">Recent Activity</h2>
+            <div className="space-y-3 sm:space-y-4">
               {recentActivities.map((activity, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className={`w-2 h-2 rounded-full mt-2 ${activity.type === 'success' ? 'bg-green-400' : activity.type === 'info' ? 'bg-blue-400' : 'bg-yellow-400'}`}></div>
-                  <div className="flex-1">
-                    <p className="text-black font-medium text-sm">{activity.action}</p>
-                    <p className="text-gray-600 text-xs">{activity.time}</p>
+                <div key={i} className="flex items-start gap-2 sm:gap-3">
+                  <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${activity.type === 'success' ? 'bg-green-400' : activity.type === 'info' ? 'bg-blue-400' : 'bg-yellow-400'}`}></div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium text-xs sm:text-sm">{activity.action}</p>
+                    <p className="text-white/60 text-xs">{activity.time}</p>
                   </div>
                 </div>
               ))}
@@ -774,19 +774,19 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="glass-card p-6 rounded-2xl bg-linear-to-r from-pink-600/10 via-purple-600/10 to-indigo-600/10 border border-white/20">
-          <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="glass-card p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-r from-pink-600/10 via-purple-600/10 to-indigo-600/10 border border-white/20">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             {user && String(user.role).toLowerCase() === 'client' && (
-              <Link to="/postjob" className="flex items-center gap-4 p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 group">
-                <div className="p-3 rounded-lg bg-blue-500/20 group-hover:bg-blue-500/30 transition-colors">
-                  <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <Link to="/postjob" className="flex items-center gap-3 p-3 sm:p-4 bg-white/5 backdrop-blur-sm rounded-lg sm:rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 group">
+                <div className="p-2 sm:p-3 rounded-lg bg-blue-500/20 group-hover:bg-blue-500/30 transition-colors flex-shrink-0">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-black">Post a Job</h3>
-                  <p className="text-black/60 text-sm">Create a new job posting</p>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-white text-sm sm:text-base">Post a Job</h3>
+                  <p className="text-white/60 text-xs sm:text-sm">Create a new job posting</p>
                 </div>
               </Link>
             )}
