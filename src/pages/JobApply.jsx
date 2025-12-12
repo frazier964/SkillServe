@@ -50,15 +50,15 @@ export default function JobApply() {
 
           <form onSubmit={submitApplication} className="space-y-4 bg-white/5 p-4 rounded">
             <div>
-              <label className="block text-sm font-medium text-slate-900">Your name</label>
+              <label className="block text-sm font-medium text-white">Your name</label>
               <input className="w-full p-3 rounded bg-white text-black" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-900">Contact (phone or email)</label>
+              <label className="block text-sm font-medium text-white">Contact (phone or email)</label>
               <input className="w-full p-3 rounded bg-white text-black" value={contact} onChange={(e) => setContact(e.target.value)} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-900">Message</label>
+              <label className="block text-sm font-medium text-white">Message</label>
               <textarea rows={5} className="w-full p-3 rounded bg-white text-black" value={message} onChange={(e) => setMessage(e.target.value)} />
             </div>
             {status && <div className="text-sm text-yellow-600">{status}</div>}
