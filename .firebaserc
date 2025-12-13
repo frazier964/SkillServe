@@ -1,8 +1,0 @@
-{
-  "projects": {
-    "default": "skillserve-d82a8",
-    "staging": "skillserve-c4c53"
-  },
-  "targets": {},
-  "etags": {}
-}
