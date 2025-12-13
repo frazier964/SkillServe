@@ -1,5 +1,9 @@
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { auth, db } from "../firebase/FirebaseConfig";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { firebaseErrorMessage } from "../utils/firebaseErrors";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -41,40 +45,44 @@ export default function Signup() {
     }
 
     try {
-      // Check if email already exists
-      const registeredAccounts = JSON.parse(localStorage.getItem("registeredAccounts") || "[]");
-      const existingAccount = registeredAccounts.find(acc => acc.email === email);
+      // Create user with Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
       
-      if (existingAccount) {
-        setError("An account with this email already exists. Please use a different email or try logging in.");
-        setIsLoading(false);
-        return;
-      }
+      // Update the user's display name
+      await updateProfile(user, { displayName: name });
       
-      // Create new account
-      const newAccount = { 
-        name, 
-        email, 
-        password, 
-        role, 
-        uid: 'local-' + Date.now(),
+      // Store additional user data in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        name,
+        email,
+        role,
+        uid: user.uid,
         createdAt: new Date().toISOString(),
         bio: '',
         avatarDataUrl: ''
-      };
+      });
       
-      // Add to accounts list
-      registeredAccounts.push(newAccount);
-      localStorage.setItem("registeredAccounts", JSON.stringify(registeredAccounts));
+      // Also store in localStorage for quick access
+      const currentUser = {
+        name,
+        email,
+        role,
+        uid: user.uid,
+        bio: '',
+        avatarDataUrl: ''
+      };
+      localStorage.setItem("user", JSON.stringify(currentUser));
       
     } catch (e) {
-      setError("Failed to create account. Please try again.");
+      const errorMessage = firebaseErrorMessage(e);
+      setError(errorMessage);
       setIsLoading(false);
       return;
     }
     
-    setSuccess("Account created successfully! Please log in with your new credentials.");
-    setTimeout(() => navigate("/login"), 800);
+    setSuccess("Account created successfully! Redirecting...");
+    setTimeout(() => navigate("/"), 800);
     setIsLoading(false);
   };
 

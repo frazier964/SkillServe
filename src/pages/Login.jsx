@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { auth, db } from "../firebase/FirebaseConfig";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { firebaseErrorMessage } from "../utils/firebaseErrors";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -47,98 +51,67 @@ export default function Login() {
     }
 
     try {
-      // Check if account exists in registered accounts
-      const registeredAccounts = JSON.parse(localStorage.getItem("registeredAccounts") || "[]");
-      const foundAccount = registeredAccounts.find(acc => acc.email === email && acc.password === password);
+      // Sign in with Firebase Authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
       
-      if (foundAccount) {
-        // Login successful - set current user
-        const currentUser = {
-          name: foundAccount.name,
-          email: foundAccount.email,
-          role: foundAccount.role,
-          uid: foundAccount.uid,
-          bio: foundAccount.bio || '',
-          avatarDataUrl: foundAccount.avatarDataUrl || ''
-        };
-        
-        localStorage.setItem("user", JSON.stringify(currentUser));
-        window.dispatchEvent(new Event('userUpdated'));
-        
-        if (remember) {
-          localStorage.setItem("remembered", JSON.stringify({ email }));
+      // Get additional user data from Firestore
+      let userData = {
+        name: user.displayName || '',
+        email: user.email,
+        role: '',
+        uid: user.uid,
+        bio: '',
+        avatarDataUrl: ''
+      };
+      
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          userData = { ...userData, ...userDoc.data() };
         }
-        
-        setSuccess(`Welcome back, ${foundAccount.name}!`);
-        setTimeout(() => navigate("/"), 500);
-        setIsLoading(false);
-        return;
+      } catch (firestoreError) {
+        console.warn("Could not fetch user data from Firestore:", firestoreError);
       }
       
-      // No account found
-      setError("Invalid email or password. Please check your credentials or create a new account.");
-    } catch (_e) {
-      setError("Login failed. Please try again.");
+      // Store user in localStorage for quick access
+      localStorage.setItem("user", JSON.stringify(userData));
+      window.dispatchEvent(new Event('userUpdated'));
+      
+      if (remember) {
+        localStorage.setItem("remembered", JSON.stringify({ email }));
+      }
+      
+      setSuccess(`Welcome back, ${userData.name || 'User'}!`);
+      setTimeout(() => navigate("/"), 500);
+    } catch (e) {
+      const errorMessage = firebaseErrorMessage(e);
+      setError(errorMessage);
+      if (e.code === 'auth/configuration-not-found') {
+        setShowEnableAuthLink(true);
+      }
     }
     setIsLoading(false);
   };
 
-  const handlePasswordReset = () => {
-    if (resetStep === 'email') {
-      if (!resetEmail.trim()) {
-        alert('Please enter your email address');
-        return;
-      }
+  const handlePasswordReset = async () => {
+    if (!resetEmail.trim()) {
+      alert('Please enter your email address');
+      return;
+    }
 
-      // Check if email exists in registered accounts
-      try {
-        const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
-        const accountExists = registeredAccounts.find(acc => acc.email === resetEmail);
-        
-        if (!accountExists) {
-          alert('No account found with this email address');
-          return;
-        }
-
-        // Move to password reset step
-        setResetStep('password');
-        setSuccess('Account found! Please enter your new password.');
-      } catch (e) {
-        alert('Error checking account. Please try again.');
-      }
-    } else {
-      // Validate new password
-      if (!newPassword.trim() || newPassword.length < 6) {
-        alert('Password must be at least 6 characters long');
-        return;
-      }
-
-      if (newPassword !== confirmPassword) {
-        alert('Passwords do not match');
-        return;
-      }
-
-      try {
-        // Update password in registered accounts
-        const registeredAccounts = JSON.parse(localStorage.getItem('registeredAccounts') || '[]');
-        const updatedAccounts = registeredAccounts.map(acc => 
-          acc.email === resetEmail 
-            ? { ...acc, password: newPassword }
-            : acc
-        );
-        
-        localStorage.setItem('registeredAccounts', JSON.stringify(updatedAccounts));
-        
-        setSuccess('Password reset successfully! You can now log in with your new password.');
-        setShowResetModal(false);
-        setResetEmail('');
-        setNewPassword('');
-        setConfirmPassword('');
-        setResetStep('email');
-        setEmail(resetEmail);
-      } catch (e) {
-        alert('Error resetting password. Please try again.');
-      }
+    try {
+      // Send password reset email via Firebase
+      await sendPasswordResetEmail(auth, resetEmail);
+      setSuccess('Password reset email sent! Check your inbox.');
+      setShowResetModal(false);
+      setResetEmail('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setResetStep('email');
+    } catch (e) {
+      const errorMessage = firebaseErrorMessage(e);
+      alert(errorMessage);
     }
   };
 
