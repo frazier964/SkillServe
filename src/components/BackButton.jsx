@@ -18,11 +18,11 @@ export default function BackButton({ className = "" }) {
       onClick={handleBack}
       className={`
         inline-flex items-center gap-2 px-4 py-2 
-        bg-white/10 hover:bg-white/20 
-        text-white border border-white/20 
+        bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700
+        text-black border border-yellow-400 
         rounded-lg transition-all duration-200 
-        hover:scale-105 backdrop-blur-sm
-        font-medium text-sm
+        hover:scale-105 shadow-lg shadow-yellow-500/50
+        font-semibold text-sm
         ${className}
       `}
       title="Go back to previous page"
