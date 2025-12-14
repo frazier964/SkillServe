@@ -19,7 +19,7 @@ export default function Activities() {
   }, []);
 
   useEffect(() => {
-    // Generate comprehensive activity data
+    
     const generateActivities = () => {
       const activityTypes = [
         { type: 'job_posted', action: 'Posted new job', icon: '📝', color: 'bg-blue-500/20 text-blue-400' },
