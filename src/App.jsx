@@ -50,6 +50,7 @@ function App() {
         <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
         <Route path="/jobs" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
         <Route path="/jobs/:index" element={<ProtectedRoute><JobApply /></ProtectedRoute>} />
+        <Route path="/jobapply/:index" element={<ProtectedRoute><JobApply /></ProtectedRoute>} />
         <Route path="/cashout" element={<ProtectedRoute><Cashout /></ProtectedRoute>} />
         <Route path="/clientratings" element={<ProtectedRoute><ClientRatings /></ProtectedRoute>} />
         <Route path="/availability" element={<ProtectedRoute><Availability /></ProtectedRoute>} />

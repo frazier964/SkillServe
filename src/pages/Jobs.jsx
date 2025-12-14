@@ -49,7 +49,8 @@ export default function Jobs() {
     setFilter(f);
     setSort(s);
 
-    let list = jobs.slice();
+    // Map jobs with their original index
+    let list = jobs.map((job, index) => ({ ...job, originalIndex: index }));
     if (f === 'active') list = list.filter(j => j.status !== 'completed');
     if (f === 'completed') list = list.filter(j => j.status === 'completed');
 
@@ -162,8 +163,8 @@ export default function Jobs() {
               ) : job.status !== 'completed' ? (
                 // Show action buttons for active jobs
                 <div className="flex sm:flex-row items-stretch gap-2">
-                  <button onClick={(ev) => { ev.stopPropagation(); handleDelete(i); }} className="px-3 py-2 rounded bg-red-600 text-white flex-1 sm:flex-initial">Remove</button>
-                  <button onClick={(ev) => { ev.stopPropagation(); navigate(`/jobapply/${i}`); }} className="px-3 py-2 rounded bg-blue-500 text-white flex-1 sm:flex-initial">Apply</button>
+                  <button onClick={(ev) => { ev.stopPropagation(); handleDelete(job.originalIndex); }} className="px-3 py-2 rounded bg-red-600 text-white flex-1 sm:flex-initial">Remove</button>
+                  <button onClick={(ev) => { ev.stopPropagation(); navigate(`/jobapply/${job.originalIndex}`); }} className="px-3 py-2 rounded bg-blue-500 text-white flex-1 sm:flex-initial">Apply</button>
                 </div>
               ) : (
                 // Completed but no review yet
