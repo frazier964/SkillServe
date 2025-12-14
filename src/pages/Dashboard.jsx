@@ -28,105 +28,120 @@ export default function Dashboard() {
         description: "Fix leaking kitchen sink and replace faucet. Experience with modern fixtures required.",
         price: "180",
         postedBy: "Sarah Johnson",
-        status: "active"
+        status: "active",
+        category: "plumber"
       },
       {
         title: "Bathroom Tile Installation",
         description: "Install ceramic tiles in master bathroom (12x8 ft). Materials provided.",
         price: "450",
         postedBy: "Michael Chen",
-        status: "completed"
+        status: "completed",
+        category: "carpenter"
       },
       {
         title: "Electrical Outlet Installation",
         description: "Install 3 new electrical outlets in living room. Must be licensed electrician.",
         price: "220",
         postedBy: "David Wilson",
-        status: "active"
+        status: "active",
+        category: "electrician"
       },
       {
         title: "Garden Fence Repair",
         description: "Repair wooden fence panels and repaint. Approximately 20ft section.",
         price: "320",
         postedBy: "Lisa Rodriguez",
-        status: "completed"
+        status: "completed",
+        category: "carpenter"
       },
       {
         title: "Ceiling Fan Installation",
         description: "Install ceiling fan in bedroom. Wiring already in place, just need mounting.",
         price: "95",
         postedBy: "James Miller",
-        status: "active"
+        status: "active",
+        category: "electrician"
       },
       {
         title: "Driveway Pressure Washing",
         description: "Power wash concrete driveway and front walkway. Remove oil stains.",
         price: "120",
         postedBy: "Amanda Davis",
-        status: "active"
+        status: "active",
+        category: "cleaner"
       },
       {
         title: "Kitchen Cabinet Door Repair",
         description: "Fix loose cabinet doors and adjust hinges. 8 doors total.",
         price: "85",
         postedBy: "Robert Taylor",
-        status: "completed"
+        status: "completed",
+        category: "carpenter"
       },
       {
         title: "Bathroom Toilet Installation",
         description: "Remove old toilet and install new one. Toilet provided by homeowner.",
         price: "150",
         postedBy: "Maria Garcia",
-        status: "active"
+        status: "active",
+        category: "plumber"
       },
       {
         title: "Window Screen Replacement",
         description: "Replace torn screens on 4 windows. Measure and install new mesh.",
         price: "160",
         postedBy: "Kevin Brown",
-        status: "active"
+        status: "active",
+        category: "carpenter"
       },
       {
         title: "Deck Staining",
         description: "Clean and stain wooden deck (16x12 ft). Stain color to be chosen.",
         price: "380",
         postedBy: "Jennifer White",
-        status: "completed"
+        status: "completed",
+        category: "painter"
       },
       {
         title: "Garbage Disposal Installation",
         description: "Install new garbage disposal unit under kitchen sink. Unit provided.",
         price: "130",
         postedBy: "Thomas Anderson",
-        status: "active"
+        status: "active",
+        category: "plumber"
       },
       {
         title: "Gutter Cleaning & Repair",
         description: "Clean gutters and repair 2 loose sections. Two-story house.",
         price: "200",
         postedBy: "Rachel Green",
-        status: "active"
+        status: "active",
+        category: "cleaner"
       },
       {
         title: "Interior Door Installation",
         description: "Hang 2 new interior doors with hardware. Doors and frames provided.",
         price: "240",
         postedBy: "Christopher Lee",
-        status: "completed"
+        status: "completed",
+        category: "carpenter"
       },
       {
         title: "Shower Head Replacement",
         description: "Replace old shower head with rainfall style head. Easy access.",
         price: "65",
         postedBy: "Emily Johnson",
-        status: "active"
+        status: "active",
+        category: "plumber"
       },
       {
         title: "Garage Door Opener Repair",
         description: "Fix garage door opener - remote not working, manual operation OK.",
         price: "140",
         postedBy: "Daniel Martinez",
-        status: "active"
+        status: "active",
+        category: "mechanic"
       }
     ];
     
