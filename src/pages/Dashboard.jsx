@@ -472,7 +472,7 @@ export default function Dashboard() {
   
   return (
     <Layout>
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 md:space-y-8">
+      <div className="w-full h-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6 md:space-y-8">
 
         <div className="glass-card p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-teal-600/20 border border-white/20">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">

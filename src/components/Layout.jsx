@@ -635,7 +635,7 @@ export default function Layout({ children }) {
         </Portal>
       )}
       
-      <main className="relative z-10 flex-1 p-2 sm:p-4">
+      <main className="relative z-10 flex-1 w-full h-full">
         {children}
       </main>
     </div>
