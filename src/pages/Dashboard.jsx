@@ -754,7 +754,9 @@ export default function Dashboard() {
                           </div>
                           <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                             <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${job.status === 'completed' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>{job.status || 'Active'}</span>
-                            <button onClick={() => handleDeleteJob(i)} className="px-3 py-1 rounded-md bg-red-600/80 text-white text-xs sm:text-sm hover:bg-red-600 whitespace-nowrap">Remove</button>
+                            {job.status !== 'completed' && (
+                              <button onClick={() => handleDeleteJob(i)} className="px-3 py-1 rounded-md bg-red-600/80 text-white text-xs sm:text-sm hover:bg-red-600 whitespace-nowrap">Remove</button>
+                            )}
                           </div>
                         </div>
                       </div>
